@@ -1,71 +1,88 @@
+import copy
+
 
 class node:
-    def __init__(self, board, root, direction):
+    def __init__(self, board, moves):
         self.board = board
-        self.root = root
-        self.direction = direction
-        self.level = root.level + 1 if root else 0
+        self.moves = moves
 
-    def whereZero(self, board):
+    def whereZero(self):
         for r in range(len(self.board)):
             for c in range(len(self.board[0])):
-                if board[r][c] == 0:
+                if self.board[r][c] == 0:
                     return r, c
         return None
 
-    def getDirection(self):
-        return self.direction
-
-    def getLevel(self):
-        return self.level
-
-    def getRoot(self):
-        return self.root
+    def getMoves(self):
+        return self.moves
 
     def getBoard(self):
         return self.board
 
-    def move(self, board, direction, currentNode):
-        r, c = self.whereZero(board)
+    def addNew(self, newDirection):
+        newBoard = copy.deepcopy(self.board)
+        return node(newBoard, self, newDirection)
+
+    def getLastMove(self):
+        if len(self.moves) == 0:
+            return ""
+        return self.moves[-1]
+
+    def move(self, direction):
+        r, c = self.whereZero()
         newR, newC = r, c
 
-        if currentNode.getDirection() == "L" and direction == "R":
+        if self.getLastMove() == "L" and direction == "R":
             return None, None
-        if currentNode.getDirection() == "R" and direction == "L":
+        if self.getLastMove() == "R" and direction == "L":
             return None, None
-        if currentNode.getDirection() == "U" and direction == "D":
+        if self.getLastMove() == "U" and direction == "D":
             return None, None
-        if currentNode.getDirection() == "D" and direction == "U":
-            return None, None
-
-        if (r == 0 and direction == "U"):
-            return None, None
-        if (r == 3 and direction == "D"):
-            return None, None
-        if (c == 0 and direction == "L"):
-            return None, None
-        if (c == 3 and direction == "R"):
+        if self.getLastMove() == "D" and direction == "U":
             return None, None
 
-        newBoard = [row[:] for row in board]
+        if not self.isMoveLegal(direction):
+            return None, None
+
+        newBoard = [row[:] for row in self.getBoard()]
+
+        if direction == "L":
+            newC -= 1
+        if direction == "R":
+            newC += 1
+        if direction == "U":
+            newR -= 1
+        if direction == "D":
+            newR += 1
 
         newBoard[r][c], newBoard[newR][newC] = newBoard[newR][newC], newBoard[r][c]
 
+        self.moves += direction
+        self.board = newBoard
+
         return newBoard, (newR, newC)
 
-    def isSolved(self, board):
+    def isMoveLegal(self, direction):
+        r, c = self.whereZero()
+        if r == 0 and direction == "U":
+            return False
+        if r == 3 and direction == "D":
+            return False
+        if c == 0 and direction == "L":
+            return False
+        if c == 3 and direction == "R":
+            return False
+        else:
+            return True
+
+    def isSolved(self):
         goal = [
             [1, 2, 3, 4],
             [5, 6, 7, 8],
             [9, 10, 11, 12],
             [13, 14, 15, 0]
         ]
-        return board == goal
+        return self.board == goal
 
     def getPath(self):
-        path = []
-        node = self
-        while node:
-            path.append(node.direction)
-            node = node.root
-        return ''.join(reversed(path))
+        return self.moves

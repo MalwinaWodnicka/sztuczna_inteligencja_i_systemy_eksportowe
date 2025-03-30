@@ -14,44 +14,26 @@ def dfs(startNode, maxDepth, direction, inf):
         currentNode = stack.pop()
         processed.add(tuple(map(tuple, currentNode.getBoard())))
 
-        if currentNode.getLevel() > inf.getMaxDepthRecursion():
-            inf.setMaxDepthRecursion(currentNode.getLevel())
 
-        if currentNode.isSolved(currentNode.getBoard()):
+        if len(currentNode.moves) > inf.getMaxDepthRecursion():
+            inf.setMaxDepthRecursion(len(currentNode.moves))
+
+        if currentNode.isSolved():
             inf.setVisitedStates(len(visited))
             inf.setProcessedStates(len(processed))
             return currentNode.getPath()
 
-        if currentNode.getLevel() == maxDepth:
+        if len(currentNode.getMoves()) == maxDepth:
             continue
 
         for d in direction:
-
-            if currentNode.getDirection() == "L" and d == "R":
-                continue
-            if currentNode.getDirection() == "R" and d == "L":
-                continue
-            if currentNode.getDirection() == "U" and d == "D":
-                continue
-            if currentNode.getDirection() == "D" and d == "U":
-                continue
-
-            r, c = startNode.whereZero(currentNode.getBoard())
-
-            if r == 0 and d == "U":
-                continue
-            if r == 3 and d == "D":
-                continue
-            if c == 0 and d == "L":
-                continue
-            if c == 3 and d == "R":
-                continue
-
-            if newBoard is not None and tuple(map(tuple, newBoard)) not in visited:
-                newNode = n.node(newBoard, currentNode, d)
-                stack.append(newNode)
-                visited.add(tuple(map(tuple, newBoard)))
+            new = n.node(currentNode.getBoard(), currentNode.getMoves())
+            newBoard, newZeroPos = new.move(d)
+            if newBoard is not None:
+                if tuple(map(tuple, new.getBoard())) not in visited:
+                    stack.append(new)
+                    visited.add(tuple(map(tuple, new.getBoard())))
 
     inf.setVisitedStates(len(visited))
     inf.setProcessedStates(len(processed))
-    return None
+    return "Nie znaleziono rozwiązania"
