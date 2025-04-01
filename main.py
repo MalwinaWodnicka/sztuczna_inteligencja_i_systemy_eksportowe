@@ -45,7 +45,7 @@ def main():
         print(":)")
 
     inf = i.info()
-    print(d.depth_first_search(firstNode, 7, "LDUR", inf))
+    print(d.depth_first_search(firstNode, 7, "RLUD", inf))
     print(inf)
 
 if __name__ == "__main__":

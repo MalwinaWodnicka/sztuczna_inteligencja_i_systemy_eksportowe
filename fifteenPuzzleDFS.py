@@ -24,9 +24,9 @@ def depth_first_search(initialNode, maxDepth, moveDirections, info):
         if len(currentNode.getMoves()) == maxDepth:
             continue
 
-        for moveDirection in moveDirections:
+        for d in moveDirections:
             newNode = n.node(currentNode.getBoard(), currentNode.getMoves())
-            newBoard = newNode.move(moveDirection)
+            newBoard = newNode.move(d)
             if newBoard is not None:
                 if tuple(map(tuple, newNode.getBoard())) not in visitedStates:
                     stackNodes.append(newNode)
