@@ -33,16 +33,16 @@ class node:
         newR, newC = r, c
 
         if self.getLastMove() == "L" and direction == "R":
-            return None, None
+            return None
         if self.getLastMove() == "R" and direction == "L":
-            return None, None
+            return None
         if self.getLastMove() == "U" and direction == "D":
-            return None, None
+            return None
         if self.getLastMove() == "D" and direction == "U":
-            return None, None
+            return None
 
         if not self.isMoveLegal(direction):
-            return None, None
+            return None
 
         newBoard = [row[:] for row in self.getBoard()]
 
@@ -60,7 +60,7 @@ class node:
         self.moves += direction
         self.board = newBoard
 
-        return newBoard, (newR, newC)
+        return newBoard
 
     def isMoveLegal(self, direction):
         r, c = self.whereZero()
