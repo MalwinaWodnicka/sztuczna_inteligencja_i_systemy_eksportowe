@@ -4,7 +4,6 @@ class info:
         self.visitedStates = None
         self.processedStates = None
         self.maxDepthRecursion = None
-        self.duration = None
         self.lengthFound = None
 
     # settery
@@ -19,9 +18,6 @@ class info:
 
     def setMaxDepthRecursion(self, maxDepthRecursion):
         self.maxDepthRecursion = maxDepthRecursion
-
-    def setDuration(self, duration):
-        self.duration = duration
 
     def setLengthFound(self, lengthFound):
         self.lengthFound = lengthFound
@@ -39,14 +35,9 @@ class info:
     def getMaxDepthRecursion(self):
         return self.maxDepthRecursion
 
-    def getDuration(self):
-        return self.duration
-
     def getLengthFound(self):
         return self.lengthFound
 
     def __str__(self):
         return (str(self.lengthFound) + "\n" + str(self.visitedStates) + "\n" + str(self.processedStates) + "\n"
-                + str(self.searchingTime) + "\n" + str(self.maxDepthRecursion) + "\n" + str(self.duration))
-
-
+                + str(self.searchingTime) + "\n" + str(self.maxDepthRecursion))

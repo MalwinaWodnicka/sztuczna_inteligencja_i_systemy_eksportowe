@@ -1,7 +1,8 @@
-import searchInfo as i
+import time
 import node as n
 
 def depth_first_search(initialNode, maxDepth, moveDirections, info):
+    startTime = time.time()
     visitedStates = set()
     processedStates = set()
     info.setMaxDepthRecursion(0)
@@ -17,8 +18,8 @@ def depth_first_search(initialNode, maxDepth, moveDirections, info):
             info.setMaxDepthRecursion(len(currentNode.getMoves()))
 
         if currentNode.isSolved():
-            info.setVisitedStates(len(visitedStates))
-            info.setProcessedStates(len(processedStates))
+            time1 = round((time.time() - startTime) * 1000, 3)
+            n.node.theEnd(currentNode, visitedStates, processedStates, time1, len(currentNode.getMoves()), info)
             return currentNode.getPath()
 
         if len(currentNode.getMoves()) == maxDepth:
@@ -34,5 +35,8 @@ def depth_first_search(initialNode, maxDepth, moveDirections, info):
 
     info.setVisitedStates(len(visitedStates))
     info.setProcessedStates(len(processedStates))
+    time1 = round((time.time() - startTime) * 1000, 3)
+    info.setLengthFound(-1)
+    n.node.theEnd(initialNode, visitedStates, processedStates, time1, -1, info)
     return "Nie znaleziono rozwiązania"
 

@@ -1,7 +1,7 @@
 import fifteenPuzzleDFS as d
 import node as n
 import searchInfo as i
-
+import aStar
 
 def loadBoard(fileName):
     with open(fileName, 'r') as file:
@@ -16,37 +16,32 @@ def loadBoard(fileName):
 
 
 def main():
-    # inf = i.info()
-    # tablica, wymiary = loadBoard("fifteen")
-    # print(tablica)
-    # print(wymiary)
-    #
-    # dfsInfo = i.info()
-    #
-    # tab = n.node(tablica, None)
-    # inf = i.info()
-    # path = dfs.dfs(tab, 7, "RULD", inf)
-    #
-    # if path is None:
-    #     print("No path found")
-    # else:
-    #     print(path, inf)
-
-
     tabe = [
         [1, 2, 3, 4],
-        [5, 7, 11, 8],
-        [9, 6, 0, 12],
-        [13, 10, 14, 15]
+        [5, 6, 7, 8],
+        [9, 10, 11, 12],
+        [13, 14, 15, 0]
     ]
-    firstNode = n.node(tabe, "")
+    # firstNode = n.node(tabe, "")
+    #
+    # if firstNode.isSolved():
+    #     print(":)")
+    #
+    # inf = i.info()
+    # print(d.depth_first_search(firstNode, 20, "RLUD", inf))
+    # print(inf)
 
-    if firstNode.isSolved():
-        print(":)")
+    initialNode = n.node(tabe, "")
 
-    inf = i.info()
-    print(d.depth_first_search(firstNode, 7, "RLUD", inf))
-    print(inf)
+    # Wybór heurystyki
+    heuristic = "manhattan"
+
+    # Tworzymy obiekt klasy info
+    info = i.info()
+
+    # Uruchamiamy A*
+    solution = aStar.solveAStar(tabe, heuristic, initialNode, "LURD", info)
+
 
 if __name__ == "__main__":
     main()
