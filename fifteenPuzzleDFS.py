@@ -33,8 +33,7 @@ def depth_first_search(initialNode, maxDepth, moveDirections, info):
                     stackNodes.append(newNode)
                     visitedStates.add(tuple(map(tuple, newNode.getBoard())))
 
-    info.setVisitedStates(len(visitedStates))
-    info.setProcessedStates(len(processedStates))
+
     time1 = round((time.time() - startTime) * 1000, 3)
     info.setLengthFound(-1)
     n.node.theEnd(initialNode, visitedStates, processedStates, time1, -1, info)

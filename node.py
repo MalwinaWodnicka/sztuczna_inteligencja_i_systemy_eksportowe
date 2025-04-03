@@ -93,3 +93,4 @@ class node:
         info.setSearchingTime(time)
         info.setVisitedStates(len(visited))
 
+
