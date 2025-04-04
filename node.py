@@ -89,8 +89,8 @@ class node:
 
     def theEnd(self, visited, processed, time, length, info):
         info.setLengthFound(length)
-        info.setProcessedStates(len(processed))
+        info.setProcessedStates(processed)
         info.setSearchingTime(time)
-        info.setVisitedStates(len(visited))
+        info.setVisitedStates(visited)
 
 

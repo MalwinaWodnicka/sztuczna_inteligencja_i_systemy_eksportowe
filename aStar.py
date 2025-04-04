@@ -51,7 +51,6 @@ def solveAStar(startBoard, heuristic, node, direction, info):
     heapq.heappush(queue, (0, 0, "", node))  # (f(n), g(n), moves, state)
 
     visited = set()
-    maxDepth = 0
     visitedStates = 0
     processedStates = 0
 
@@ -59,19 +58,16 @@ def solveAStar(startBoard, heuristic, node, direction, info):
         _, cost, path, board = heapq.heappop(queue)
         processedStates += 1
 
-        if len(board.getMoves()) > info.getMaxDepthRecursion():
-            info.setMaxDepthRecursion(len(board.getMoves()))
-
-        if board == goal:
+        if board.getBoard() == goal:
             time1 = round((time.time() - startTime) * 1000, 3)
-            node.theEnd(board, visitedStates, processedStates, time1, len(board.getMoves()), info)
+            node.theEnd(visitedStates, processedStates, time1, len(board.getMoves()), info)
             return board.getPath()
 
         # visited.add(tuple(map(tuple, board)))
 
         for d in direction:
             newNode = node.__class__(board.getBoard(), board.getMoves())
-            newBoard = node.move(d)
+            newBoard = newNode.move(d)
 
             if newBoard is not None and tuple(map(tuple, newBoard)) not in visited:
                 visitedStates += 1

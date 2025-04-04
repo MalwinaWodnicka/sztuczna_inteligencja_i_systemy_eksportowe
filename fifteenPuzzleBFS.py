@@ -15,7 +15,7 @@ def breadth_first_search(initialNode, moveDirections, info):
 
         if currentNode.isSolved():
             time1 = round((time.time() - startTime) * 1000, 3)
-            n.node.theEnd(currentNode, visitedStates, processedStates, time1, len(currentNode.getMoves()), info)
+            n.node.theEnd(currentNode, len(visitedStates), len(processedStates), time1, len(currentNode.getMoves()), info)
             return currentNode.getPath()
 
         for d in moveDirections:
@@ -29,5 +29,5 @@ def breadth_first_search(initialNode, moveDirections, info):
 
     time1 = round((time.time() - startTime) * 1000, 3)
     info.setLengthFound(-1)
-    n.node.theEnd(initialNode, visitedStates, processedStates, time1, -1, info)
+    n.node.theEnd(initialNode, len(visitedStates), len(processedStates), time1, -1, info)
     return "Nie znaleziono rozwiązania"

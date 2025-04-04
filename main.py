@@ -23,25 +23,27 @@ def main():
         [9, 0, 6, 12],
         [13, 10, 14, 15]
     ]
-    firstNode = n.node(tabe, "")
-
-    if firstNode.isSolved():
-        print(":)")
-
-    inf = i.info()
-    print(b.breadth_first_search(firstNode, "RLUD", inf))
-    print(inf)
-
-    # initialNode = n.node(tabe, "")
+    # firstNode = n.node(tabe, "")
     #
-    # # Wybór heurystyki
-    # heuristic = "manhattan"
+    # if firstNode.isSolved():
+    #     print(":)")
     #
-    # # Tworzymy obiekt klasy info
-    # info = i.info()
-    #
-    # # Uruchamiamy A*
-    # solution = aStar.solveAStar(tabe, heuristic, initialNode, "LURD", info)
+    # inf = i.info()
+    # print(b.breadth_first_search(firstNode, "RLUD", inf))
+    # print(inf)
+
+    initialNode = n.node(tabe, "")
+
+    # Wybór heurystyki
+    heuristic = "manhattan"
+
+    # Tworzymy obiekt klasy info
+    info = i.info()
+
+    # Uruchamiamy A*
+    solution = aStar.solveAStar(tabe, heuristic, initialNode, "LURD", info)
+    print(solution)
+    print(info)
 
 
 if __name__ == "__main__":
