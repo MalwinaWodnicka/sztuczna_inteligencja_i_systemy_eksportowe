@@ -39,5 +39,7 @@ class info:
         return self.lengthFound
 
     def __str__(self):
-        return (str(self.lengthFound) + "\n" + str(self.visitedStates) + "\n" + str(self.processedStates) + "\n"
-                + str(self.searchingTime) + "\n" + str(self.maxDepthRecursion))
+        return ("Długość znalezionego rozwiązania: " + str(self.lengthFound) + "\nLiczba stanów odwiedzonych: " +
+                str(self.visitedStates) + "\nLiczba stanów przetworzonych: " + str(
+                    self.processedStates)  + "\nCzas trwania procesu obliczeniowego w milisekundach: " + str(
+                    self.searchingTime))

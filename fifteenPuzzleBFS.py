@@ -2,10 +2,11 @@ import time
 from collections import deque
 import node as n
 
-def breadth_first_search(initialNode, moveDirections, info):
+def breadth_first_search(initialNode, moveDirections, info, r, c):
     startTime = time.time()
     visitedStates = set()
     processedStates = set()
+    goal = initialNode.isSolved(r, c)
     queueNodes = deque([initialNode])
     visitedStates.add(tuple(map(tuple, initialNode.getBoard())))
 
@@ -13,18 +14,24 @@ def breadth_first_search(initialNode, moveDirections, info):
         currentNode = queueNodes.popleft()
         processedStates.add(tuple(map(tuple, currentNode.getBoard())))
 
-        if currentNode.isSolved():
+        if currentNode.getBoard() == goal:
             time1 = round((time.time() - startTime) * 1000, 3)
-            n.node.theEnd(currentNode, len(visitedStates), len(processedStates), time1, len(currentNode.getMoves()), info)
+            n.node.theEnd(currentNode, len(visitedStates), len(processedStates), time1, len(currentNode.getMoves()),
+                          info)
             return currentNode.getPath()
 
         for d in moveDirections:
-            newNode = n.node(currentNode.getBoard(), currentNode.getMoves())
-            newBoard = newNode.move(d)
-            if newBoard is not None:
-                if tuple(map(tuple, newNode.getBoard())) not in visitedStates:
-                    queueNodes.append(newNode)
-                    visitedStates.add(tuple(map(tuple, newNode.getBoard())))
+            newNode = currentNode.move(d, r, c)
+            if newNode is not None and tuple(map(tuple, newNode.getBoard())) not in visitedStates:
+                boardTuple = tuple(map(tuple, newNode.getBoard()))
+                queueNodes.append(newNode)
+                visitedStates.add(boardTuple)
+
+    time1 = round((time.time() - startTime) * 1000, 3)
+    info.setLengthFound(-1)
+    n.node.theEnd(initialNode, len(visitedStates), len(processedStates), time1, -1, info)
+    return "Nie znaleziono rozwiązania"
+
 
 
     time1 = round((time.time() - startTime) * 1000, 3)
