@@ -6,7 +6,7 @@ def depth_first_search(initialNode, maxDepth, moveDirections, info, r, c):
     visitedStates = set()
     processedStates = set()
     info.setMaxDepthRecursion(0)
-    goal = initialNode.isSolved(r, c)
+    goal = initialNode.goal(r, c)
     stackNodes = [initialNode]
     visitedStates.add(tuple(map(tuple, initialNode.getBoard())))
 

@@ -2,24 +2,13 @@ import os
 
 import fifteenPuzzleDFS as d
 import node as n
+import pliki
 import searchInfo as i
 import aStar
 import fifteenPuzzleBFS as b
 
-def loadBoard(fileName):
-    with open(fileName, 'r') as file:
-        lines = file.readlines()
-        rows, cols = map(int, lines[0].split())
-        board = []
-
-        for line in lines[1:]:
-            board.append(list(map(int, line.split())))
-
-    return board, rows, cols
-
-
 def main():
-    tabe, r, c = loadBoard("fifteen")
+    tabe, r, c = pliki.loadBoard("plansze/4x4_01_0001")
     firstNode = n.node(tabe, "")
     inf = i.info()
 

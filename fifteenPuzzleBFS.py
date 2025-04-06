@@ -6,7 +6,7 @@ def breadth_first_search(initialNode, moveDirections, info, r, c):
     startTime = time.time()
     visitedStates = set()
     processedStates = set()
-    goal = initialNode.isSolved(r, c)
+    goal = initialNode.goal(r, c)
     queueNodes = deque([initialNode])
     visitedStates.add(tuple(map(tuple, initialNode.getBoard())))
 

@@ -73,7 +73,7 @@ class node:
         else:
             return True
 
-    def isSolved(self, rows, cols):
+    def goal(self, rows, cols):
         expected = []
         n = 1
 
@@ -97,5 +97,7 @@ class node:
         info.setProcessedStates(processed)
         info.setSearchingTime(time)
         info.setVisitedStates(visited)
+
+
 
 

@@ -27,7 +27,7 @@ def manhattan(board, goal, r, c):
 
 def solveAStar(startBoard, heuristic, node, info, r, c):
     startTime = time.time()
-    goal = node.isSolved(r, c)
+    goal = node.goal(r, c)
 
     if heuristic == "manh":
         heuristicFunc = manhattan
