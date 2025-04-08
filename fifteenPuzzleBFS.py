@@ -36,9 +36,3 @@ def breadth_first_search(initialNode, moveDirections, info, r, c):
     n.node.theEnd(initialNode, len(visitedStates), len(processedStates), time1, -1, info)
     return "Nie znaleziono rozwiązania"
 
-
-
-    time1 = round((time.time() - startTime) * 1000, 3)
-    info.setLengthFound(-1)
-    n.node.theEnd(initialNode, len(visitedStates), len(processedStates), time1, -1, info)
-    return "Nie znaleziono rozwiązania"

@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from collections import defaultdict
 
-
 resultsDir = "analysis_results"
 
 
@@ -32,14 +31,16 @@ def plot_grouped_bars(grouped_data, metric_name, title, ylabel, filename):
         ax.set_xticks(x + width * (len(variants) - 1) / 2)
         ax.set_xticklabels(depths)
         ax.legend()
-
-        if subplot_idx == (0, 0) and (metric_name == "searchTime" or "visitedStates" or "processedStates"):
+        if subplot_idx == (0,0) and (
+                metric_name == "searchTime" or "processedStates" or "visitedStates" or "maxDepthRecursion"):
             ax.set_yscale('log')
 
     plt.tight_layout(rect=(0, 0, 1, 0.96))
     os.makedirs("plots", exist_ok=True)
     plt.savefig(filename)
     plt.close()
+
+
 
 
 data = []
@@ -49,10 +50,10 @@ dfs = []
 astr = []
 
 bfs_by_depth_perm = {
-    i: {perm: [] for perm in ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"]} for i in
+    i: {perm: [] for perm in ["RDLU", "RDUL", "DRUL", "DRLU", "LURD", "LUDR", "ULRD", "ULDR"]} for i in
     range(1, 8)}
 dfs_by_depth_perm = {
-    i: {perm: [] for perm in ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"]} for i in
+    i: {perm: [] for perm in ["RDLU", "RDUL", "DRUL", "DRLU", "LURD", "LUDR", "ULRD", "ULDR"]} for i in
     range(1, 8)}
 astr_by_depth_heur = {i: {heur: [] for heur in ["manh", "hamm"]} for i in range(1, 8)}
 
@@ -113,9 +114,6 @@ for filename in os.listdir(resultsDir):
             if variant in astr_by_depth_heur[depth]:
                 astr_by_depth_heur[depth][variant].append(result)
 
-
-
-
 plot_grouped_bars(
     grouped_data=[
         (
@@ -125,14 +123,17 @@ plot_grouped_bars(
             (0, 0)
         ),
         (astr_by_depth_heur, ["manh", "hamm"], "A* - heurystyki", (0, 1)),
-        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "BFS - permutacje", (1, 0)),
-        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "DFS - permutacje", (1, 1)),
+        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD", "LUDR", "ULRD", "ULDR"], "BFS - permutacje",
+         (1, 0)),
+        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD", "LUDR", "ULRD", "ULDR"], "DFS - permutacje",
+         (1, 1)),
     ],
     metric_name="searchTime",
     title="Czas wyszukiwania według głębokości i wariantu",
     ylabel="Czas [s]",
     filename="plots/searchTimePlot.png"
 )
+
 
 plot_grouped_bars(
     grouped_data=[
@@ -149,10 +150,11 @@ plot_grouped_bars(
          (1, 1)),
     ],
     metric_name="maxDepthRecursion",
-    title="Czas wyszukiwania według głębokości i wariantu",
-    ylabel="Czas [s]",
+    title="Maksymalna osiągnięta głębokość według głębokości i wariantu",
+    ylabel="maksymalna głębokość",
     filename="plots/maxDepthRecursionPlot.png"
 )
+
 
 plot_grouped_bars(
     grouped_data=[
@@ -169,10 +171,11 @@ plot_grouped_bars(
          (1, 1)),
     ],
     metric_name="processedStates",
-    title="Czas wyszukiwania według głębokości i wariantu",
-    ylabel="Czas [s]",
+    title="Przetworzone stany według głębokości i wariantu",
+    ylabel="przetworzone stany",
     filename="plots/processedStatesPlot.png"
 )
+
 
 plot_grouped_bars(
     grouped_data=[
@@ -189,10 +192,11 @@ plot_grouped_bars(
          (1, 1)),
     ],
     metric_name="visitedStates",
-    title="Czas wyszukiwania według głębokości i wariantu",
-    ylabel="Czas [s]",
+    title="Odwiedzone stany według głębokości i wariantu",
+    ylabel="odwiedzone stany",
     filename="plots/visitedStatesPlot.png"
 )
+
 
 plot_grouped_bars(
     grouped_data=[
@@ -209,7 +213,7 @@ plot_grouped_bars(
          (1, 1)),
     ],
     metric_name="solutionLength",
-    title="Czas wyszukiwania według głębokości i wariantu",
-    ylabel="Czas [s]",
+    title="Długość rozwiązania według głębokości",
+    ylabel="długość rozwiązania",
     filename="plots/solutionLengthPlot.png"
 )
