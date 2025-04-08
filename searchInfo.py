@@ -41,5 +41,6 @@ class info:
     def __str__(self):
         return ("Długość znalezionego rozwiązania: " + str(self.lengthFound) + "\nLiczba stanów odwiedzonych: " +
                 str(self.visitedStates) + "\nLiczba stanów przetworzonych: " + str(
-                    self.processedStates)  + "\nCzas trwania procesu obliczeniowego w milisekundach: " + str(
+                    self.processedStates) + "\nMaksymalna osiągnięta głębokość rekursji: " + str(
+                    self.getMaxDepthRecursion()) + "\nCzas trwania procesu obliczeniowego w milisekundach: " + str(
                     self.searchingTime))

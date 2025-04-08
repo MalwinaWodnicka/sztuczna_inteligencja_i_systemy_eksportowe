@@ -7,12 +7,16 @@ def breadth_first_search(initialNode, moveDirections, info, r, c):
     visitedStates = set()
     processedStates = set()
     goal = initialNode.goal(r, c)
+    info.setMaxDepthRecursion(0)
     queueNodes = deque([initialNode])
     visitedStates.add(tuple(map(tuple, initialNode.getBoard())))
 
     while queueNodes:
         currentNode = queueNodes.popleft()
         processedStates.add(tuple(map(tuple, currentNode.getBoard())))
+
+        if len(currentNode.getMoves()) > info.getMaxDepthRecursion():
+            info.setMaxDepthRecursion(len(currentNode.getMoves()))
 
         if currentNode.getBoard() == goal:
             time1 = round((time.time() - startTime) * 1000, 3)

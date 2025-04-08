@@ -23,7 +23,6 @@ def main():
             directions = input("Podaj porządek przeszukiwania: ").upper()
             print(d.depth_first_search(firstNode, 20,directions, inf, r, c))
             print(inf)
-            print("Maksymalna głębokość rekursji: " + str(inf.getMaxDepthRecursion()))
         elif wybor == "astr":
             while True:
                 heuristic = input("Wybierz heurystyke(hamm/manh): ")

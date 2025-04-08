@@ -9,14 +9,14 @@ import searchInfo as i
 
 # Definicja kierunków ruchu
 move_directions = [
-    "RDLU",  # prawo-dół-góra-lewo
-    "RDLU",  # prawo-dół-lewo-góra
-    "DRLU",  # dół-prawo-góra-lewo
-    "DRLU",  # dół-prawo-lewo-góra
-    "LUDR",  # lewo-góra-dół-prawo
-    "LUDR",  # lewo-góra-prawo-dół
-    "ULRD",  # góra-lewo-dół-prawo
-    "ULRD"   # góra-lewo-prawo-dół
+    "RDUL",
+    "RDLU",
+    "DRUL",
+    "DRLU",
+    "LURD",
+    "LUDR",
+    "ULDR",
+    "ULRD"
 ]
 
 def analyze_all_files(inputDir, outputDir):
@@ -33,7 +33,6 @@ def analyze_all_files(inputDir, outputDir):
             depth_str = parts[1]  # "01" z pliku "4x4_01_0001.txt"
             number_str = parts[-1].split(".")[0]  # "0001" z pliku "4x4_01_0001.txt"
             base_filename = f"{rows}x{cols}_{depth_str}_{number_str}"
-
 
             for direction in move_directions:
                 solution = b.breadth_first_search(initial, direction, info, rows, cols)
@@ -59,7 +58,6 @@ def analyze_all_files(inputDir, outputDir):
             save_additional_info(info, outputDir, base_filename, "astr", "manh")
 
 def save_additional_info(info, output_dir, base_filename, algorithm, d):
-    # Pobranie danych z instancji klasy info
     solution_length = info.getLengthFound() if info.getLengthFound() is not None else -1
     visited_count = info.getVisitedStates()
     processed_count = info.getProcessedStates()
@@ -74,15 +72,13 @@ def save_additional_info(info, output_dir, base_filename, algorithm, d):
         f.write(f"{elapsed_time:.3f}\n")
 
 def save_solution(solution, moves, output_dir, base_filename, algorithm, d):
-    # Sprawdzenie, czy rozwiązanie jest None
     if solution is None:
         with open(f"{output_dir}/{base_filename}_{algorithm}_{d}_sol.txt", "w") as f:
             f.write("-1\n")
     else:
-        # Zapisz rozwiązanie w pliku
         with open(f"{output_dir}/{base_filename}_{algorithm}_{d}_sol.txt", "w") as f:
-            f.write(f"{moves}\n")  # Zapisz długość rozwiązania
-            f.write("".join(solution) + "\n")  # Zapisz rozwiązanie jako ciąg znaków
+            f.write(f"{moves}\n")
+            f.write("".join(solution) + "\n")
 
 
 input_dir = "generated_states"
@@ -91,5 +87,4 @@ os.makedirs(output_dir, exist_ok=True)
 
 
 
-# Uruchomienie analizy wszystkich plików
 analyze_all_files(input_dir, output_dir)
