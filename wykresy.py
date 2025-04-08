@@ -1,89 +1,207 @@
 import os
-import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from collections import defaultdict
 
-# Load and process data
+
+resultsDir = "analysis_results"
+
+
+def plot_grouped_bars(grouped_data, metric_name, title, ylabel, filename):
+    fig, axs = plt.subplots(2, 2, figsize=(14, 10))
+    fig.suptitle(title)
+
+    for i, (data_dict, variants, plot_title, subplot_idx) in enumerate(grouped_data):
+        ax = axs[subplot_idx[0]][subplot_idx[1]]
+
+        depths = sorted(data_dict.keys())
+        width = 0.1
+        x = np.arange(len(depths))
+
+        for j, variant in enumerate(variants):
+            means = []
+            for d in depths:
+                values = [entry[metric_name] for entry in data_dict[d][variant] if metric_name in entry]
+                mean = sum(values) / len(values) if values else 0
+                means.append(mean)
+            ax.bar(x + j * width, means, width, label=variant.upper())
+
+        ax.set_title(plot_title)
+        ax.set_xlabel("Głębokość")
+        ax.set_ylabel(ylabel)
+        ax.set_xticks(x + width * (len(variants) - 1) / 2)
+        ax.set_xticklabels(depths)
+        ax.legend()
+
+        if subplot_idx == (1, 1) and (metric_name == "searchTime" or "visitedStates" or "processedStates"):
+            ax.set_yscale('log')
+
+    plt.tight_layout(rect=(0, 0, 1, 0.96))
+    os.makedirs("plots", exist_ok=True)
+    plt.savefig(filename)
+    plt.close()
+
+
 data = []
-for filename in os.listdir("analysis_results"):
-    if filename.endswith("_stats.txt"):
-        parts = filename.split('_')
-        try:
-            depth = int(parts[1][1:])
-            algorithm = parts[3]
-            variant = parts[4]
 
-            with open(os.path.join("analysis_results", filename), 'r') as f:
-                lines = [line.strip() for line in f.readlines()]
-                if len(lines) >= 4:
-                    data.append({
-                        'depth': depth,
-                        'algorithm': algorithm,
-                        'variant': variant,
-                        'max_depth': int(lines[3])
-                    })
-        except (IndexError, ValueError):
+bfs = []
+dfs = []
+astr = []
+
+bfs_by_depth_perm = {
+    i: {perm: [] for perm in ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"]} for i in
+    range(1, 8)}
+dfs_by_depth_perm = {
+    i: {perm: [] for perm in ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"]} for i in
+    range(1, 8)}
+astr_by_depth_heur = {i: {heur: [] for heur in ["manh", "hamm"]} for i in range(1, 8)}
+
+bfs_by_depth = {i: [] for i in range(1, 8)}
+dfs_by_depth = {i: [] for i in range(1, 8)}
+astr_by_depth = {i: [] for i in range(1, 8)}
+strategies_by_depth = {
+    i: {
+        "bfs": bfs_by_depth[i],
+        "dfs": dfs_by_depth[i],
+        "astr": astr_by_depth[i]
+    } for i in range(1, 8)
+}
+
+for filename in os.listdir(resultsDir):
+    if not filename.endswith("_stats.txt"):
+        continue
+
+    parts = filename.split("_")
+    depth = int(parts[1])
+    alg = parts[3]
+    variant = parts[4].split(".")[0]
+
+    with open(os.path.join(resultsDir, filename)) as f:
+        lines = f.read().strip().split("\n")
+        if len(lines) != 5:
             continue
 
+        result = {
+            "depth": depth,
+            "alg": alg,
+            "variant": variant,
+            "filename": filename,
+            "solutionLength": int(lines[0]),
+            "visitedStates": int(lines[1]),
+            "processedStates": int(lines[2]),
+            "maxDepthRecursion": int(lines[3]),
+            "searchTime": float(lines[4])
+        }
+
+        data.append(result)
+
+        if alg == "bfs":
+            bfs.append(result)
+            bfs_by_depth[depth].append(result)
+            if variant in bfs_by_depth_perm[depth]:
+                bfs_by_depth_perm[depth][variant].append(result)
+
+        elif alg == "dfs":
+            dfs.append(result)
+            dfs_by_depth[depth].append(result)
+            if variant in dfs_by_depth_perm[depth]:
+                dfs_by_depth_perm[depth][variant].append(result)
+
+        elif alg == "astr":
+            astr.append(result)
+            astr_by_depth[depth].append(result)
+            if variant in astr_by_depth_heur[depth]:
+                astr_by_depth_heur[depth][variant].append(result)
 
 
 
 
+plot_grouped_bars(
+    grouped_data=[
+        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "BFS - permutacje", (0, 0)),
+        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "DFS - permutacje", (0, 1)),
+        (astr_by_depth_heur, ["manh", "hamm"], "A* - heurystyki", (1, 0)),
+        (
+            {i: {"bfs": bfs_by_depth[i], "dfs": dfs_by_depth[i], "astr": astr_by_depth[i]} for i in range(1, 8)},
+            ["bfs", "dfs", "astr"],
+            "Porównanie strategii",
+            (1, 1)
+        )
+    ],
+    metric_name="searchTime",
+    title="Czas wyszukiwania według głębokości i wariantu",
+    ylabel="Czas [s]",
+    filename="plots/searchTimePlot.png"
+)
 
+plot_grouped_bars(
+    grouped_data=[
+        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "BFS - permutacje", (0, 0)),
+        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "DFS - permutacje", (0, 1)),
+        (astr_by_depth_heur, ["manh", "hamm"], "A* - heurystyki", (1, 0)),
+        (
+            {i: {"bfs": bfs_by_depth[i], "dfs": dfs_by_depth[i], "astr": astr_by_depth[i]} for i in range(1, 8)},
+            ["bfs", "dfs", "astr"],
+            "Porównanie strategii",
+            (1, 1)
+        )
+    ],
+    metric_name="maxDepthRecursion",
+    title="Czas wyszukiwania według głębokości i wariantu",
+    ylabel="Czas [s]",
+    filename="plots/maxDepthRecursionPlot.png"
+)
 
+plot_grouped_bars(
+    grouped_data=[
+        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "BFS - permutacje", (0, 0)),
+        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "DFS - permutacje", (0, 1)),
+        (astr_by_depth_heur, ["manh", "hamm"], "A* - heurystyki", (1, 0)),
+        (
+            {i: {"bfs": bfs_by_depth[i], "dfs": dfs_by_depth[i], "astr": astr_by_depth[i]} for i in range(1, 8)},
+            ["bfs", "dfs", "astr"],
+            "Porównanie strategii",
+            (1, 1)
+        )
+    ],
+    metric_name="processedStates",
+    title="Czas wyszukiwania według głębokości i wariantu",
+    ylabel="Czas [s]",
+    filename="plots/processedStatesPlot.png"
+)
 
-plt.xlabel('Głębokość rozwiązania', fontsize=12)
-plt.ylabel('Średnia maks. głębokość rekursji', fontsize=12)
-plt.title('Porównanie wszystkich strategii', fontsize=14, pad=20)
-plt.xticks(x + bar_width, all_depths)
-plt.legend(fontsize=10)
-plt.grid(True, axis='y', alpha=0.3)
+plot_grouped_bars(
+    grouped_data=[
+        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "BFS - permutacje", (0, 0)),
+        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "DFS - permutacje", (0, 1)),
+        (astr_by_depth_heur, ["manh", "hamm"], "A* - heurystyki", (1, 0)),
+        (
+            {i: {"bfs": bfs_by_depth[i], "dfs": dfs_by_depth[i], "astr": astr_by_depth[i]} for i in range(1, 8)},
+            ["bfs", "dfs", "astr"],
+            "Porównanie strategii",
+            (1, 1)
+        )
+    ],
+    metric_name="visitedStates",
+    title="Czas wyszukiwania według głębokości i wariantu",
+    ylabel="Czas [s]",
+    filename="plots/visitedStatesPlot.png"
+)
 
-# Plot 2: BFS variants
-plt.subplot(2, 2, 2)
-variants_bfs = grouped_bfs['variant'].unique()
-for i, variant in enumerate(variants_bfs):
-    subset = grouped_bfs[grouped_bfs['variant'] == variant]
-    if not subset.empty:
-        plt.bar(x + i * bar_width, subset['max_depth'], width=bar_width, label=f'BFS ({variant})')
-
-plt.xlabel('Głębokość rozwiązania', fontsize=12)
-plt.ylabel('Średnia maks. głębokość rekursji', fontsize=12)
-plt.title('BFS - różne porządki ruchów', fontsize=14, pad=20)
-plt.xticks(x + (len(variants_bfs) - 1) * bar_width / 2, all_depths)
-plt.legend(fontsize=10)
-plt.grid(True, axis='y', alpha=0.3)
-
-# Plot 3: DFS variants
-plt.subplot(2, 2, 3)
-variants_dfs = grouped_dfs['variant'].unique()
-for i, variant in enumerate(variants_dfs):
-    subset = grouped_dfs[grouped_dfs['variant'] == variant]
-    if not subset.empty:
-        plt.bar(x + i * bar_width, subset['max_depth'], width=bar_width, label=f'DFS ({variant})')
-
-plt.xlabel('Głębokość rozwiązania', fontsize=12)
-plt.ylabel('Średnia maks. głębokość rekursji', fontsize=12)
-plt.title('DFS - różne porządki ruchów', fontsize=14, pad=20)
-plt.xticks(x + (len(variants_dfs) - 1) * bar_width / 2, all_depths)
-plt.legend(fontsize=10)
-plt.grid(True, axis='y', alpha=0.3)
-
-# Plot 4: A* heuristics
-plt.subplot(2, 2, 4)
-variants_astar = ['hamm', 'manh']
-for i, variant in enumerate(variants_astar):
-    subset = grouped_astar[grouped_astar['variant'] == variant]
-    if not subset.empty:
-        plt.bar(x + i * bar_width, subset['max_depth'], width=bar_width, label=f'A* ({variant})')
-
-plt.xlabel('Głębokość rozwiązania', fontsize=12)
-plt.ylabel('Średnia maks. głębokość rekursji', fontsize=12)
-plt.title('A* - różne heurystyki', fontsize=14, pad=20)
-plt.xticks(x + bar_width / 2, all_depths)
-plt.legend(fontsize=10)
-plt.grid(True, axis='y', alpha=0.3)
-
-plt.tight_layout(pad=3.0)
-plt.savefig('porownanie_rekursji_slupki.png', dpi=300, bbox_inches='tight')
-plt.show()
+plot_grouped_bars(
+    grouped_data=[
+        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "BFS - permutacje", (0, 0)),
+        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "DFS - permutacje", (0, 1)),
+        (astr_by_depth_heur, ["manh", "hamm"], "A* - heurystyki", (1, 0)),
+        (
+            {i: {"bfs": bfs_by_depth[i], "dfs": dfs_by_depth[i], "astr": astr_by_depth[i]} for i in range(1, 8)},
+            ["bfs", "dfs", "astr"],
+            "Porównanie strategii",
+            (1, 1)
+        )
+    ],
+    metric_name="solutionLength",
+    title="Czas wyszukiwania według głębokości i wariantu",
+    ylabel="Czas [s]",
+    filename="plots/solutionLengthPlot.png"
+)
