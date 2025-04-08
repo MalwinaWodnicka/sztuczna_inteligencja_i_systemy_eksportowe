@@ -33,7 +33,7 @@ def plot_grouped_bars(grouped_data, metric_name, title, ylabel, filename):
         ax.set_xticklabels(depths)
         ax.legend()
 
-        if subplot_idx == (1, 1) and (metric_name == "searchTime" or "visitedStates" or "processedStates"):
+        if subplot_idx == (0, 0) and (metric_name == "searchTime" or "visitedStates" or "processedStates"):
             ax.set_yscale('log')
 
     plt.tight_layout(rect=(0, 0, 1, 0.96))
@@ -118,15 +118,15 @@ for filename in os.listdir(resultsDir):
 
 plot_grouped_bars(
     grouped_data=[
-        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "BFS - permutacje", (0, 0)),
-        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "DFS - permutacje", (0, 1)),
-        (astr_by_depth_heur, ["manh", "hamm"], "A* - heurystyki", (1, 0)),
         (
             {i: {"bfs": bfs_by_depth[i], "dfs": dfs_by_depth[i], "astr": astr_by_depth[i]} for i in range(1, 8)},
             ["bfs", "dfs", "astr"],
             "Porównanie strategii",
-            (1, 1)
-        )
+            (0, 0)
+        ),
+        (astr_by_depth_heur, ["manh", "hamm"], "A* - heurystyki", (0, 1)),
+        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "BFS - permutacje", (1, 0)),
+        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "DFS - permutacje", (1, 1)),
     ],
     metric_name="searchTime",
     title="Czas wyszukiwania według głębokości i wariantu",
@@ -136,15 +136,17 @@ plot_grouped_bars(
 
 plot_grouped_bars(
     grouped_data=[
-        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "BFS - permutacje", (0, 0)),
-        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "DFS - permutacje", (0, 1)),
-        (astr_by_depth_heur, ["manh", "hamm"], "A* - heurystyki", (1, 0)),
         (
             {i: {"bfs": bfs_by_depth[i], "dfs": dfs_by_depth[i], "astr": astr_by_depth[i]} for i in range(1, 8)},
             ["bfs", "dfs", "astr"],
             "Porównanie strategii",
-            (1, 1)
-        )
+            (0, 0)
+        ),
+        (astr_by_depth_heur, ["manh", "hamm"], "A* - heurystyki", (0, 1)),
+        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD", "LUDR", "ULRD", "ULDR"], "BFS - permutacje",
+         (1, 0)),
+        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD", "LUDR", "ULRD", "ULDR"], "DFS - permutacje",
+         (1, 1)),
     ],
     metric_name="maxDepthRecursion",
     title="Czas wyszukiwania według głębokości i wariantu",
@@ -154,15 +156,17 @@ plot_grouped_bars(
 
 plot_grouped_bars(
     grouped_data=[
-        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "BFS - permutacje", (0, 0)),
-        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "DFS - permutacje", (0, 1)),
-        (astr_by_depth_heur, ["manh", "hamm"], "A* - heurystyki", (1, 0)),
         (
             {i: {"bfs": bfs_by_depth[i], "dfs": dfs_by_depth[i], "astr": astr_by_depth[i]} for i in range(1, 8)},
             ["bfs", "dfs", "astr"],
             "Porównanie strategii",
-            (1, 1)
-        )
+            (0, 0)
+        ),
+        (astr_by_depth_heur, ["manh", "hamm"], "A* - heurystyki", (0, 1)),
+        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD", "LUDR", "ULRD", "ULDR"], "BFS - permutacje",
+         (1, 0)),
+        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD", "LUDR", "ULRD", "ULDR"], "DFS - permutacje",
+         (1, 1)),
     ],
     metric_name="processedStates",
     title="Czas wyszukiwania według głębokości i wariantu",
@@ -172,15 +176,17 @@ plot_grouped_bars(
 
 plot_grouped_bars(
     grouped_data=[
-        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "BFS - permutacje", (0, 0)),
-        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "DFS - permutacje", (0, 1)),
-        (astr_by_depth_heur, ["manh", "hamm"], "A* - heurystyki", (1, 0)),
         (
             {i: {"bfs": bfs_by_depth[i], "dfs": dfs_by_depth[i], "astr": astr_by_depth[i]} for i in range(1, 8)},
             ["bfs", "dfs", "astr"],
             "Porównanie strategii",
-            (1, 1)
-        )
+            (0, 0)
+        ),
+        (astr_by_depth_heur, ["manh", "hamm"], "A* - heurystyki", (0, 1)),
+        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD", "LUDR", "ULRD", "ULDR"], "BFS - permutacje",
+         (1, 0)),
+        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD", "LUDR", "ULRD", "ULDR"], "DFS - permutacje",
+         (1, 1)),
     ],
     metric_name="visitedStates",
     title="Czas wyszukiwania według głębokości i wariantu",
@@ -190,15 +196,17 @@ plot_grouped_bars(
 
 plot_grouped_bars(
     grouped_data=[
-        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "BFS - permutacje", (0, 0)),
-        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD","LUDR","ULRD", "ULDR"], "DFS - permutacje", (0, 1)),
-        (astr_by_depth_heur, ["manh", "hamm"], "A* - heurystyki", (1, 0)),
         (
             {i: {"bfs": bfs_by_depth[i], "dfs": dfs_by_depth[i], "astr": astr_by_depth[i]} for i in range(1, 8)},
             ["bfs", "dfs", "astr"],
             "Porównanie strategii",
-            (1, 1)
-        )
+            (0, 0)
+        ),
+        (astr_by_depth_heur, ["manh", "hamm"], "A* - heurystyki", (0, 1)),
+        (bfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD", "LUDR", "ULRD", "ULDR"], "BFS - permutacje",
+         (1, 0)),
+        (dfs_by_depth_perm, ["RDLU", "RDUL", "DRUL", "DRLU", "LURD", "LUDR", "ULRD", "ULDR"], "DFS - permutacje",
+         (1, 1)),
     ],
     metric_name="solutionLength",
     title="Czas wyszukiwania według głębokości i wariantu",
