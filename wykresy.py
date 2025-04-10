@@ -12,7 +12,7 @@ def plot_grouped_bars(grouped_data, metric_name, title, ylabel, filename):
 
     for i, (data_dict, variants, plot_title, subplot_idx) in enumerate(grouped_data):
         ax = axs[subplot_idx[0]][subplot_idx[1]]
-
+        values = 0
         depths = sorted(data_dict.keys())
         width = 0.1
         x = np.arange(len(depths))
@@ -31,9 +31,15 @@ def plot_grouped_bars(grouped_data, metric_name, title, ylabel, filename):
         ax.set_xticks(x + width * (len(variants) - 1) / 2)
         ax.set_xticklabels(depths)
         ax.legend()
-        if subplot_idx == (0,0) and (
-                metric_name == "searchTime" or "processedStates" or "visitedStates" or "maxDepthRecursion"):
+        print(f"{metric_name}, {max(values)}")
+
+        if subplot_idx == (0,0) and metric_name == "maxDepthRecursion":
+            ax.set_yticks(np.arange(0, 25, 5))
+        elif subplot_idx == (0,0) and metric_name == "searchTime":
             ax.set_yscale('log')
+            ax.set_yticks([1, 10, 100, 1000])
+        else:
+            ax.set_yticks(np.arange(0, max(values) + 1, abs(max(values) / 5)))
 
     plt.tight_layout(rect=(0, 0, 1, 0.96))
     os.makedirs("plots", exist_ok=True)

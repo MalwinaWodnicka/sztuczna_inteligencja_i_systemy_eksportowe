@@ -32,40 +32,40 @@ def writeSolution(filename, moves):
         else:
             f.write(f"{len(moves)}\n{moves}\n")
 
-if len(sys.argv) != 6:
-    print("Użycie: program <strategia> <parametr> <plik_wejściowy> <plik_rozwiązania> <plik_statystyk>")
-    sys.exit(1)
-
-strategy = sys.argv[1]
-param = sys.argv[2]
-inputFile = sys.argv[3]
-solutionFile = sys.argv[4]
-statsFile = sys.argv[5]
-
-board, rows, cols = loadBoard(inputFile)
-startNode = n.node(board, "")
-info = i.info()
-
-if strategy == "bfs":
-    path = b.breadth_first_search(startNode, param, info, rows, cols)
-elif strategy == "dfs":
-    paht = d.depth_first_search(startNode, param, 20, info, rows, cols)
-elif strategy == "astr":
-    path = a.solveAStar(board, param, startNode, info, rows, cols)
-else:
-    print("Nieznana strategia:", strategy)
-    sys.exit(1)
-
-
-solutionLength = len(path)
-visited = info.getVisitedStates()
-processed = info.getProcessedStates()
-depth = info.getMaxDepthRecursion()
-time = info.getSearchingTime()
-
-writeSolution(solutionFile, path if path else -1)
-solutionLength = len(path) if path else -1
-writeStats(statsFile, solutionLength, visited, processed, depth, time)
+# if len(sys.argv) != 6:
+#     print("Użycie: program <strategia> <parametr> <plik_wejściowy> <plik_rozwiązania> <plik_statystyk>")
+#     sys.exit(1)
+#
+# strategy = sys.argv[1]
+# param = sys.argv[2]
+# inputFile = sys.argv[3]
+# solutionFile = sys.argv[4]
+# statsFile = sys.argv[5]
+#
+# board, rows, cols = loadBoard(inputFile)
+# startNode = n.node(board, "")
+# info = i.info()
+#
+# if strategy == "bfs":
+#     path = b.breadth_first_search(startNode, param, info, rows, cols)
+# elif strategy == "dfs":
+#     paht = d.depth_first_search(startNode, param, 20, info, rows, cols)
+# elif strategy == "astr":
+#     path = a.solveAStar(board, param, startNode, info, rows, cols)
+# else:
+#     print("Nieznana strategia:", strategy)
+#     sys.exit(1)
+#
+#
+# solutionLength = len(path)
+# visited = info.getVisitedStates()
+# processed = info.getProcessedStates()
+# depth = info.getMaxDepthRecursion()
+# time = info.getSearchingTime()
+#
+# writeSolution(solutionFile, path if path else -1)
+# solutionLength = len(path) if path else -1
+# writeStats(statsFile, solutionLength, visited, processed, depth, time)
 
 
 
