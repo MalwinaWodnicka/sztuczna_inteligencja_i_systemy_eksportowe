@@ -1,58 +1,51 @@
 import os
 
-import fifteenPuzzleDFS as d
+import fifteenPuzzleDFS as dfs
 import node as n
 import pliki
-import searchInfo as i
+import searchInfo as info
 import aStar
-import fifteenPuzzleBFS as b
+import fifteenPuzzleBFS as bfs
+
 
 def main():
-    tabe, r, c = pliki.loadBoard("plansze/4x4_01_0001")
-    firstNode = n.node(tabe, "")
-    inf = i.info()
+    board, rows, cols = pliki.load_board("generated_states/4x4_06_0100.txt")
+    first_node = n.Node(board, "")
+    search_info = info.SearchInfo()
 
     while True:
         print("bfs - breadth first search \ndfs - depth first search\nA* (A-star) - astr\nq - quit")
-        wybor = input("Wybierz strategię: ").lower()
-        if wybor == "bfs":
+        choice = input("Wybierz strategię: ").lower()
+
+        if choice == "bfs":
             directions = input("Podaj porządek przeszukiwania: ").upper()
-            print(b.breadth_first_search(firstNode, directions, inf, r, c))
-            print(inf)
-        elif wybor == "dfs":
+            print(bfs.breadth_first_search(first_node, directions, search_info, rows, cols))
+            print(search_info)
+
+        elif choice == "dfs":
             directions = input("Podaj porządek przeszukiwania: ").upper()
-            print(d.depth_first_search(firstNode, 20,directions, inf, r, c))
-            print(inf)
-        elif wybor == "astr":
+            print(dfs.depth_first_search(first_node, 20, directions, search_info, rows, cols))
+            print(search_info)
+
+        elif choice == "astr":
             while True:
-                heuristic = input("Wybierz heurystyke(hamm/manh): ")
-                if heuristic == "hamm":
-                    print(aStar.solveAStar(tabe, heuristic, firstNode, inf, r, c))
-                    print(inf)
-                    break
-                elif heuristic == "manh":
-                    print(aStar.solveAStar(tabe, heuristic, firstNode, inf, r, c))
-                    print(inf)
+                heuristic = input("Wybierz heurystykę (hamm/manh): ")
+                if heuristic in ["hamm", "manh"]:
+                    print(aStar.solve_a_star(board, heuristic, first_node, search_info, rows, cols))
+                    print(search_info)
                     break
                 else:
-                    print("Niepoprawna heurystytka.")
-        elif wybor == "q":
+                    print("Niepoprawna heurystyka.")
+
+        elif choice == "q":
             break
+
         else:
             print("Nie ma takiego wyboru.")
-        input("\nNacisnij enter, aby kontynuować...")
-        print("\n"*3)
 
-
+        input("\nNaciśnij Enter, aby kontynuować...")
+        print("\n" * 3)
 
 
 if __name__ == "__main__":
     main()
-
-
-"""
-[[1, 2, 3, 4], 
-[5, 6, 7, 8], 
-[9, 10, 11, 12], 
-[0, 13, 14, 15]]
-"""

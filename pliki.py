@@ -9,8 +9,8 @@ import searchInfo as i
 import os
 import subprocess
 
-def loadBoard(fileName):
-    with open(fileName, 'r') as file:
+def load_board(file_name):
+    with open(file_name, 'r') as file:
         lines = file.readlines()
         rows, cols = map(int, lines[0].split())
         board = []
@@ -20,13 +20,13 @@ def loadBoard(fileName):
 
     return board, rows, cols
 
-def writeStats(filename, length, visited, processed, depth, time_ms):
-    with open(filename, "w") as f:
+def write_stats(file_name, length, visited, processed, depth, time_ms):
+    with open(file_name, "w") as f:
         f.write(f"{length}\n{visited}\n{processed}\n{depth}\n{round(time_ms, 3)}\n")
 
 
-def writeSolution(filename, moves):
-    with open(filename, "w") as f:
+def write_solution(file_name, moves):
+    with open(file_name, "w") as f:
         if moves == -1:
             f.write("-1\n")
         else:
@@ -38,34 +38,34 @@ def writeSolution(filename, moves):
 #
 # strategy = sys.argv[1]
 # param = sys.argv[2]
-# inputFile = sys.argv[3]
-# solutionFile = sys.argv[4]
-# statsFile = sys.argv[5]
+# input_file = sys.argv[3]
+# solution_file = sys.argv[4]
+# stats_file = sys.argv[5]
 #
-# board, rows, cols = loadBoard(inputFile)
-# startNode = n.node(board, "")
+# board, rows, cols = load_board(input_file)
+# start_node = n.node(board, "")
 # info = i.info()
 #
 # if strategy == "bfs":
-#     path = b.breadth_first_search(startNode, param, info, rows, cols)
+#     path = b.breadth_first_search(start_node, param, info, rows, cols)
 # elif strategy == "dfs":
-#     paht = d.depth_first_search(startNode, param, 20, info, rows, cols)
+#     path = d.depth_first_search(start_node, param, 20, info, rows, cols)
 # elif strategy == "astr":
-#     path = a.solveAStar(board, param, startNode, info, rows, cols)
+#     path = a.solve_a_star(board, param, start_node, info, rows, cols)
 # else:
 #     print("Nieznana strategia:", strategy)
 #     sys.exit(1)
 #
 #
-# solutionLength = len(path)
-# visited = info.getVisitedStates()
-# processed = info.getProcessedStates()
-# depth = info.getMaxDepthRecursion()
-# time = info.getSearchingTime()
+# solution_length = len(path)
+# visited = info.get_visited_states()
+# processed = info.get_processed_states()
+# depth = info.get_max_depth_recursion()
+# time = info.get_searching_time()
 #
-# writeSolution(solutionFile, path if path else -1)
-# solutionLength = len(path) if path else -1
-# writeStats(statsFile, solutionLength, visited, processed, depth, time)
+# write_solution(solution_file, path if path else -1)
+# solution_length = len(path) if path else -1
+# write_stats(statsFile, solution_length, visited, processed, depth, time)
 
 
 
