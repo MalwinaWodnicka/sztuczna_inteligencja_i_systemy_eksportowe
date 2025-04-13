@@ -1,5 +1,7 @@
 import heapq
+import itertools
 import time
+from heapq import heappush, heappop
 
 
 def hamming(board, goal, r, c):
@@ -46,11 +48,13 @@ def solve_a_star(start_board, heuristic, node, info, r, c):
     else:
         raise ValueError("Invalid heuristic")
 
+    counter = itertools.count()
     queue = []
-    heapq.heappush(queue, (0 + heuristic_func(start_board, goal, r, c), 0, "", node))
+    func = heuristic_func(start_board, goal, r, c)
+    heappush(queue, (func + len(node.get_path()), next(counter), node))
 
     while queue:
-        f, cost, path, current = heapq.heappop(queue)
+        _, _, current = heappop(queue)
         processed_states += 1
 
         if len(current.get_moves()) > info.get_max_depth_recursion():
@@ -61,14 +65,14 @@ def solve_a_star(start_board, heuristic, node, info, r, c):
             node.the_end(len(visited_states), processed_states, elapsed_time, len(current.get_path()), info)
             return current.get_path()
 
-        board = get_choices(current, r, c)
-        for choice in board:
+        for direction in "LURD":
+            choice = current.move(direction, r, c)
             board_tuple = tuple(map(tuple, choice.get_board()))
-            if board_tuple not in visited_states and board_tuple is not None:
+            if board_tuple not in visited_states:
                 visited_states.add(board_tuple)
-                new_cost = cost + 1
+
                 h_value = heuristic_func(choice.get_board(), goal, r, c)
-                heapq.heappush(queue, (new_cost + h_value, new_cost, current.get_path() + choice.get_path(), choice))
+                heappush(queue, (h_value + len(choice.get_path()), next(counter), choice))
 
     elapsed_time = round((time.time() - start_time) * 1000, 3)
     node.the_end(start_board, len(visited_states), processed_states, elapsed_time, -1, info)

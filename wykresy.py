@@ -1,6 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.ticker import LogLocator
 
 results_dir = "analysis_results"
 
@@ -36,8 +37,13 @@ def plot_grouped_bars(grouped_data, metric_name, title, ylabel, filename):
             ax.set_yticks(np.arange(0, 25, 5))
         elif subplot_idx == (0, 0) and metric_name == "search_time":
             ax.set_yscale('log')
-            ax.set_yticks([1, 10, 100, 1000])
-
+            ax.yaxis.set_major_locator(LogLocator(base=10.0, subs=(10.0,), numticks=6))
+        elif subplot_idx == (0, 0) and metric_name == "processed_states":
+            ax.set_yscale('log')
+            ax.yaxis.set_major_locator(LogLocator(base=10.0, subs=(10.0,), numticks=6))
+        elif subplot_idx == (0, 0) and metric_name == "visited_states":
+            ax.set_yscale('log')
+            ax.yaxis.set_major_locator(LogLocator(base=10.0, subs=(10.0,), numticks=6))
 
     plt.tight_layout(rect=(0, 0, 1, 0.96))
     os.makedirs("plots", exist_ok=True)
@@ -109,9 +115,11 @@ for filename in os.listdir(results_dir):
                 astr_by_depth_heur[depth][variant].append(result)
 
 
+
+
 def plot_all_metrics():
     metrics = [
-        ("search_time", "Czas wyszukiwania według głębokości i wariantu", "Czas [s]", "search_time_plot.png"),
+        ("search_time", "Czas wyszukiwania według głębokości i wariantu", "Czas [ms]", "search_time_plot.png"),
         ("max_depth_recursion", "Maksymalna osiągnięta głębokość według głębokości i wariantu", "maksymalna głębokość", "max_depth_recursion_plot.png"),
         ("processed_states", "Przetworzone stany według głębokości i wariantu", "przetworzone stany", "processed_states_plot.png"),
         ("visited_states", "Odwiedzone stany według głębokości i wariantu", "odwiedzone stany", "visited_states_plot.png"),

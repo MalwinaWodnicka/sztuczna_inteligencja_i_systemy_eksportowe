@@ -9,9 +9,9 @@ import fifteenPuzzleBFS as bfs
 
 
 def main():
-    board, rows, cols = pliki.load_board("generated_states/4x4_06_0100.txt")
+    board, rows, cols = pliki.load_board("generated_states/4x4_01_0002.txt")
     first_node = n.Node(board, "")
-    search_info = info.SearchInfo()
+    search_info = info.Info()
 
     while True:
         print("bfs - breadth first search \ndfs - depth first search\nA* (A-star) - astr\nq - quit")
