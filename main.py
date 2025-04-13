@@ -9,7 +9,7 @@ import fifteenPuzzleBFS as bfs
 
 
 def main():
-    board, rows, cols = pliki.load_board("generated_states/4x4_01_0002.txt")
+    board, rows, cols = pliki.load_board("generated_states/4x4_07_0212.txt")
     first_node = n.Node(board, "")
     search_info = info.Info()
 

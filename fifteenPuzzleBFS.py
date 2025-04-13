@@ -3,7 +3,7 @@ from collections import deque
 import node as n
 
 def breadth_first_search(initial_node, move_directions, info, rows, cols):
-    start_time = time.time()
+    start_time = time.perf_counter()
     visited_states = set()
     processed_states = set()
     goal = initial_node.goal(rows, cols)
@@ -31,6 +31,6 @@ def breadth_first_search(initial_node, move_directions, info, rows, cols):
                 queue_nodes.append(new_node)
                 visited_states.add(board_tuple)
 
-    duration = round((time.time() - start_time) * 1000, 3)
+    duration = round((time.perf_counter() - start_time) * 1000, 3)
     n.Node.the_end(initial_node, len(visited_states), len(processed_states), duration, -1, info)
     return "Nie znaleziono rozwiązania"

@@ -32,15 +32,15 @@ def analyze_all_files(input_dir, output_dir):
             number_str = parts[-1].split(".")[0]
             base_filename = f"{rows}x{cols}_{depth_str}_{number_str}"
 
-            for direction in move_directions:
-                solution = b.breadth_first_search(initial_node, direction, search_info, rows, cols)
-                save_solution(solution, len(solution), output_dir, base_filename, "bfs", direction)
-                save_additional_info(search_info, output_dir, base_filename, "bfs", direction)
-
-            for direction in move_directions:
-                solution = d.depth_first_search(initial_node, 20, direction, search_info, rows, cols)
-                save_solution(solution, len(solution), output_dir, base_filename, "dfs", direction)
-                save_additional_info(search_info, output_dir, base_filename, "dfs", direction)
+            # for direction in move_directions:
+            #     solution = b.breadth_first_search(initial_node, direction, search_info, rows, cols)
+            #     save_solution(solution, len(solution), output_dir, base_filename, "bfs", direction)
+            #     save_additional_info(search_info, output_dir, base_filename, "bfs", direction)
+            #
+            # for direction in move_directions:
+            #     solution = d.depth_first_search(initial_node, 20, direction, search_info, rows, cols)
+            #     save_solution(solution, len(solution), output_dir, base_filename, "dfs", direction)
+            #     save_additional_info(search_info, output_dir, base_filename, "dfs", direction)
 
             solution = a.solve_a_star(board, "hamm", initial_node, search_info, rows, cols)
             save_solution(solution, len(solution), output_dir, base_filename, "astr", "hamm")
