@@ -89,9 +89,6 @@ class Node:
 
         return expected
 
-    def get_path(self):
-        return self.moves
-
     def the_end(self, visited, processed, time, length, info):
         info.set_length_found(length)
         info.set_processed_states(processed)

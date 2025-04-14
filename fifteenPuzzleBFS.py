@@ -22,7 +22,7 @@ def breadth_first_search(initial_node, move_directions, info, rows, cols):
             duration = round((time.perf_counter() - start_time) * 1000, 3)
             n.Node.the_end(current_node, len(visited_states), len(processed_states), duration,
                            len(current_node.get_moves()), info)
-            return current_node.get_path()
+            return current_node.get_moves()
 
         for direction in move_directions:
             new_node = current_node.move(direction, rows, cols)

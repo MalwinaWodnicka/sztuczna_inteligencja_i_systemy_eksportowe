@@ -53,8 +53,8 @@ def solve_a_star(start_board, heuristic, node, info, r, c):
 
         if current.get_board() == goal:
             elapsed_time = round((time.perf_counter() - start_time) * 1000, 3)
-            node.the_end(len(visited_states), processed_states, elapsed_time, len(current.get_path()), info)
-            return current.get_path()
+            node.the_end(len(visited_states), processed_states, elapsed_time, len(current.get_moves()), info)
+            return current.get_moves()
 
         for direction in "LURD":
             choice = current.move(direction, r, c)
@@ -64,7 +64,7 @@ def solve_a_star(start_board, heuristic, node, info, r, c):
                     continue
 
                 visited_states.add(board_tuple)
-                g = len(choice.get_path())
+                g = len(choice.get_moves())
                 h = heuristic_func(choice.get_board(), goal, r, c)
                 f = g + h
                 heappush(queue, (f, next(counter), choice))
