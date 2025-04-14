@@ -5,11 +5,6 @@ class Node:
     def __init__(self, board, moves):
         self.board = copy.deepcopy(board)
         self.moves = moves[:]
-        self.cost = 0
-        self.heuristic = 0
-
-    def __lt__(self, other):
-        return (self.cost + self.heuristic) < (other.cost + other.heuristic)
 
     def where_zero(self):
         for r in range(len(self.board)):

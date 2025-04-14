@@ -1,4 +1,3 @@
-import heapq
 import itertools
 import time
 from heapq import heappush, heappop
@@ -25,15 +24,6 @@ def manhattan(board, goal, r, c):
     return dist
 
 
-def get_choices(state, r, c):
-    new_states = []
-    for d in "LURD":
-        moving = state.move(d, r, c)
-        if moving is not None:
-            new_states.append(moving)
-    return new_states
-
-
 def solve_a_star(start_board, heuristic, node, info, r, c):
     start_time = time.perf_counter()
     goal = node.goal(r, c)
@@ -50,7 +40,6 @@ def solve_a_star(start_board, heuristic, node, info, r, c):
 
     counter = itertools.count()
     queue = []
-    depth = 0
 
     initial_h = heuristic_func(start_board, goal, r, c)
     heappush(queue, (initial_h, next(counter), node))
@@ -58,8 +47,8 @@ def solve_a_star(start_board, heuristic, node, info, r, c):
     while queue:
         _, _, current = heappop(queue)
         processed_states += 1
-        depth += 1
-        if depth > info.get_max_depth_recursion():
+
+        if len(current.get_moves()) > info.get_max_depth_recursion():
             info.set_max_depth_recursion(len(current.get_moves()))
 
         if current.get_board() == goal:
@@ -75,8 +64,9 @@ def solve_a_star(start_board, heuristic, node, info, r, c):
                     continue
 
                 visited_states.add(board_tuple)
+                g = len(choice.get_path())
                 h = heuristic_func(choice.get_board(), goal, r, c)
-                f = depth + h
+                f = g + h
                 heappush(queue, (f, next(counter), choice))
 
     elapsed_time = round((time.perf_counter() - start_time) * 1000, 3)
