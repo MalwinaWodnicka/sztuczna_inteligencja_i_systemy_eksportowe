@@ -50,6 +50,7 @@ def solve_a_star(start_board, heuristic, node, info, r, c):
 
     counter = itertools.count()
     queue = []
+    depth = 0
 
     initial_h = heuristic_func(start_board, goal, r, c)
     heappush(queue, (initial_h, next(counter), node))
@@ -57,8 +58,8 @@ def solve_a_star(start_board, heuristic, node, info, r, c):
     while queue:
         _, _, current = heappop(queue)
         processed_states += 1
-
-        if len(current.get_moves()) > info.get_max_depth_recursion():
+        depth += 1
+        if depth > info.get_max_depth_recursion():
             info.set_max_depth_recursion(len(current.get_moves()))
 
         if current.get_board() == goal:
@@ -74,9 +75,8 @@ def solve_a_star(start_board, heuristic, node, info, r, c):
                     continue
 
                 visited_states.add(board_tuple)
-                g = len(choice.get_path())
                 h = heuristic_func(choice.get_board(), goal, r, c)
-                f = g + h
+                f = depth + h
                 heappush(queue, (f, next(counter), choice))
 
     elapsed_time = round((time.perf_counter() - start_time) * 1000, 3)
