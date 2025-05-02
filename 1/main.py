@@ -1,5 +1,3 @@
-import os
-
 import fifteenPuzzleDFS as dfs
 import node as n
 import pliki

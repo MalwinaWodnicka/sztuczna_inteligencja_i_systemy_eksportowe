@@ -1,5 +1,4 @@
 import os
-import time
 import node as n
 import pliki
 import fifteenPuzzleDFS as d
