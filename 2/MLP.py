@@ -2,7 +2,7 @@ import pickle
 import random
 import numpy as np
 import matplotlib.pyplot as plt
-from functions import sigmoid, sigmoid_derivative
+from MLP_module import sigmoid, sigmoid_grad
 
 
 class MLP:
@@ -68,13 +68,13 @@ class MLP:
             z_values.append(z)
             activations.append(sigmoid(z))
 
-        delta = (activations[-1] - y) * sigmoid_derivative(activations[-1])
+        delta = (activations[-1] - y) * sigmoid_grad(activations[-1])
         bias_grad[-1] = delta
         weight_grad[-1] = np.dot(delta, activations[-2].T)
 
         for l in range(2, self.num_layers):
             z = z_values[-l]
-            sp = sigmoid_derivative(activations[-l])
+            sp = sigmoid_grad(activations[-l])
             delta = np.dot(self.weights[-l + 1].T, delta) * sp
             bias_grad[-l] = delta
             weight_grad[-l] = np.dot(delta, activations[-l - 1].T)
@@ -106,4 +106,5 @@ class MLP:
         plt.title('Przebieg błędu treningowego')
         plt.grid(True)
         plt.legend()
+        plt.ylim(bottom=0)
         plt.show()

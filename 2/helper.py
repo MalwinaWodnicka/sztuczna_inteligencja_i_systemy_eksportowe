@@ -27,4 +27,5 @@ def plot_training_error(file_path):
     plt.title("Training Progress")
     plt.grid(True)
     plt.legend()
+    plt.ylim(bottom=0)
     plt.show()
