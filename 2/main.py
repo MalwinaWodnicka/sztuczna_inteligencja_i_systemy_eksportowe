@@ -13,8 +13,16 @@ def get_input(prompt, cast_type=int, cond=lambda x: True):
 
 
 if __name__ == "__main__":
-    print("1 - Iris Dataset\n2 - Autoencoder Example")
-    dataset_choice = get_input("Select dataset: ", int, lambda x: x in [1, 2])
+
+
+    while True:
+        print("1 - Iris Dataset\n2 - Autoencoder Example")
+        dataset_choice = get_input("Select dataset: ", int)
+        if dataset_choice not in [1, 2]:
+            print("Niepoprawny wybor, sprobuj jeszcze raz.")
+        else:
+            break
+
 
     if dataset_choice == 1:
         df = pd.read_csv("data/data.csv", header=None)
@@ -61,7 +69,11 @@ if __name__ == "__main__":
         epochs, stop_error = (get_input("Epochs: "), -1.0) if stop_type == 1 else (10000, get_input("Error threshold: ", float))
 
         lr = get_input("Learning rate (0-1): ", float, lambda x: 0 <= x <= 1)
-        momentum = get_input("Momentum (0-1): ", float, lambda x: 0 <= x <= 1)
+        dec = get_input("Do you want momentum? 1-yes/0-no: ")
+        if dec == 1:
+            momentum = get_input("Momentum (0-1): ", float, lambda x: 0 <= x <= 1)
+        else:
+            momentum = 0.0
         log_step = get_input("Log step: ", int)
         shuffle = get_input("Shuffle data? (1-yes / 0-no): ", int) == 1
 
@@ -76,6 +88,8 @@ if __name__ == "__main__":
         y_pred = []
         for x, y in test_data:
             pred = np.argmax(net.forward(x))
+            hidden_outputs = net.get_hidden_output(x)
+            print(f"Wejście: {x.ravel()} -> Ukryte: {hidden_outputs.ravel()}")
             actual = np.argmax(y)
             y_true.append(actual)
             y_pred.append(pred)

@@ -62,6 +62,15 @@ class NeuralNet:
         if self.use_bias:
             self.biases = [b - (lr / batch_size) * db for b, db in zip(self.biases, total_b)]
 
+    def get_hidden_output(self, x):
+        a = x
+        for i in range(len(self.weights) - 1):  # wszystkie warstwy oprócz ostatniej
+            z = np.dot(self.weights[i], a)
+            if self.use_bias:
+                z += self.biases[i]
+            a = sigmoid(z)
+        return a
+
     def train(self, data, epochs, stop_error, lr, momentum, shuffle=True, log_step=10):
         logs = []
         for epoch in range(epochs):
