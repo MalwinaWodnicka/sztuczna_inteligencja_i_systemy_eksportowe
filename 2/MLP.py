@@ -52,40 +52,56 @@ class MLP:
         if self.use_bias:
             self.biases = [b - (lr / len(batch)) * bd for b, bd in zip(self.biases, bias_deltas)]
 
+    def _softmax(self, z):
+        e_z = np.exp(z - np.max(z))
+        return e_z / np.sum(e_z, axis=0, keepdims=True)
+
     def _forward(self, input_vector):
-        for w, b in zip(self.weights, self.biases):
-            input_vector = sigmoid(np.dot(w, input_vector) + b)
-        return input_vector
+        self.activations = [input_vector]
+        self.z_values = []
+
+        for i in range(self.num_layers - 1):
+            w = self.weights[i]
+            b = self.biases[i]
+            z = np.dot(w, self.activations[-1]) + b
+            self.z_values.append(z)
+
+            if i == self.num_layers - 2:
+                a = self._softmax(z)
+            else:
+                a = sigmoid(z)
+
+            self.activations.append(a)
+
+        return self.activations[-1]
 
     def _backward(self, x, y):
+        self._forward(x)
+
         bias_grad = [np.zeros_like(b) for b in self.biases]
         weight_grad = [np.zeros_like(w) for w in self.weights]
 
-        activations = [x]
-        z_values = []
-        for w, b in zip(self.weights, self.biases):
-            z = np.dot(w, activations[-1]) + b
-            z_values.append(z)
-            activations.append(sigmoid(z))
-
-        delta = (activations[-1] - y) * sigmoid_grad(activations[-1])
+        delta = self.activations[-1] - y
         bias_grad[-1] = delta
-        weight_grad[-1] = np.dot(delta, activations[-2].T)
+        weight_grad[-1] = np.dot(delta, self.activations[-2].T)
 
         for l in range(2, self.num_layers):
-            z = z_values[-l]
-            sp = sigmoid_grad(activations[-l])
+            sp = sigmoid_grad(self.activations[-l])
             delta = np.dot(self.weights[-l + 1].T, delta) * sp
             bias_grad[-l] = delta
-            weight_grad[-l] = np.dot(delta, activations[-l - 1].T)
+            weight_grad[-l] = np.dot(delta, self.activations[-l - 1].T)
 
         return bias_grad, weight_grad
 
     def _compute_total_error(self, data):
-        return np.mean([np.mean(np.square(self._forward(x) - y)) for x, y in data])
+        return -np.mean([
+            np.sum(y * np.log(self._forward(x) + 1e-9))
+            for x, y in data
+        ])
 
     def predict(self, x):
-        return self._forward(x)
+        output = self._forward(x)
+        return np.argmax(output)
 
     def save(self, path):
         with open(path, 'wb') as f:
