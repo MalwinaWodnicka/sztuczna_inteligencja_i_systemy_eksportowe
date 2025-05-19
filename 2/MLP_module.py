@@ -40,24 +40,22 @@ class NeuralNet:
         activations = [x]
         zs = []
 
-        # Forward pass (with storage)
         for i, (b, w) in enumerate(zip(self.biases, self.weights)):
             z = np.dot(w, x) + b if self.use_bias else np.dot(w, x)
             zs.append(z)
             if i == len(self.weights) - 1:
-                x = softmax(z)  # CHANGED
+                x = softmax(z)
             else:
                 x = sigmoid(z)
             activations.append(x)
 
-        # Backward pass
-        delta = cross_entropy_deriv(y, activations[-1])  # CHANGED
+        delta = cross_entropy_deriv(y, activations[-1])
         grads_b[-1] = delta
         grads_w[-1] = delta @ activations[-2].T
 
         for l in range(2, len(self.layers)):
-            z = activations[-l]
-            delta = (self.weights[-l + 1].T @ delta) * sigmoid_grad(z)
+            z = zs[-l]
+            delta = (self.weights[-l + 1].T @ delta) * sigmoid_grad(sigmoid(z))
             grads_b[-l] = delta
             grads_w[-l] = delta @ activations[-l - 1].T
 
@@ -82,7 +80,7 @@ class NeuralNet:
 
     def get_hidden_output(self, x):
         a = x
-        for i in range(len(self.weights) - 1):  # wszystkie warstwy oprócz ostatniej
+        for i in range(len(self.weights) - 1):
             z = np.dot(self.weights[i], a)
             if self.use_bias:
                 z += self.biases[i]
@@ -94,17 +92,24 @@ class NeuralNet:
         for epoch in range(epochs):
             if shuffle:
                 np.random.shuffle(data)
+
             self.update(data, lr, momentum)
-            err = np.mean([cross_entropy_loss(y, self.forward(x)) for x, y in data])
-            if epoch % log_step == 0:
-                print(f"Epoch {epoch}: Error = {err}")
-                logs.append((epoch, err))
-            if stop_error != -1 and err <= stop_error:
-                print("Error threshold reached.")
+
+            total_loss = np.mean([
+                cross_entropy_loss(y, self.forward(x)) for x, y in data
+            ])
+
+            if (epoch + 1) % log_step == 0 or epoch == 0:
+                print(f"Epoch {epoch + 1}, Error: {total_loss:.6f}")
+                logs.append((epoch + 1, total_loss))
+
+            if stop_error != -1 and total_loss <= stop_error:
+                print(f"OTarget error ({stop_error}) reached. Training completed.")
                 break
         with open("data/train_logs.csv", "w") as f:
             for ep, err in logs:
                 f.write(f"{ep},{err}\n")
+
 
     def save(self, path):
         with open(path, "wb") as f:
