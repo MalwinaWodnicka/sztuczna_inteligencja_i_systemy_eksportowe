@@ -4,8 +4,16 @@ import pickle
 
 def sigmoid(x): return 1 / (1 + np.exp(-x))
 def sigmoid_grad(x): return x * (1 - x)
-def mse_loss(y_true, y_pred): return np.mean((y_true - y_pred) ** 2)
-def mse_deriv(y_true, y_pred): return y_pred - y_true
+
+def softmax(x):
+    e_x = np.exp(x - np.max(x))
+    return e_x / np.sum(e_x, axis=0, keepdims=True)
+
+def cross_entropy_loss(y_true, y_pred):
+    return -np.sum(y_true * np.log(y_pred + 1e-8))  # CHANGED
+
+def cross_entropy_deriv(y_true, y_pred):
+    return y_pred - y_true
 
 
 class NeuralNet:
@@ -18,8 +26,12 @@ class NeuralNet:
         self.velocity = [np.zeros_like(w) for w in self.weights]
 
     def forward(self, x):
-        for b, w in zip(self.biases, self.weights):
-            x = sigmoid(w @ x + b)
+        for i, (b, w) in enumerate(zip(self.biases, self.weights)):
+            z = np.dot(w, x) + b if self.use_bias else np.dot(w, x)
+            if i == len(self.weights) - 1:
+                x = softmax(z)  # CHANGED
+            else:
+                x = sigmoid(z)
         return x
 
     def backward(self, x, y):
@@ -28,20 +40,26 @@ class NeuralNet:
         activations = [x]
         zs = []
 
-        for b, w in zip(self.biases, self.weights):
-            x = sigmoid(np.dot(w, x) + b)
-            zs.append(x)
+        # Forward pass (with storage)
+        for i, (b, w) in enumerate(zip(self.biases, self.weights)):
+            z = np.dot(w, x) + b if self.use_bias else np.dot(w, x)
+            zs.append(z)
+            if i == len(self.weights) - 1:
+                x = softmax(z)  # CHANGED
+            else:
+                x = sigmoid(z)
             activations.append(x)
 
-        delta = mse_deriv(y, activations[-1]) * sigmoid_grad(activations[-1])
+        # Backward pass
+        delta = cross_entropy_deriv(y, activations[-1])  # CHANGED
         grads_b[-1] = delta
         grads_w[-1] = delta @ activations[-2].T
 
         for l in range(2, len(self.layers)):
             z = activations[-l]
-            delta = (self.weights[-l+1].T @ delta) * sigmoid_grad(z)
+            delta = (self.weights[-l + 1].T @ delta) * sigmoid_grad(z)
             grads_b[-l] = delta
-            grads_w[-l] = delta @ activations[-l-1].T
+            grads_w[-l] = delta @ activations[-l - 1].T
 
         return grads_b, grads_w
 
@@ -77,7 +95,7 @@ class NeuralNet:
             if shuffle:
                 np.random.shuffle(data)
             self.update(data, lr, momentum)
-            err = np.mean([mse_loss(y, self.forward(x)) for x, y in data])
+            err = np.mean([cross_entropy_loss(y, self.forward(x)) for x, y in data])
             if epoch % log_step == 0:
                 print(f"Epoch {epoch}: Error = {err}")
                 logs.append((epoch, err))

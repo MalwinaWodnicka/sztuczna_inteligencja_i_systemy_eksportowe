@@ -32,8 +32,15 @@ if __name__ == "__main__":
         input_size = 4
         output_size = 3
     else:
-        train_data = [(np.eye(4)[i].reshape(4, 1), np.eye(4)[i].reshape(4, 1)) for i in range(4)]
-        test_data = train_data[:]
+        train_data = [(np.array([[1], [0], [0], [0]]), np.array([[1], [0], [0], [0]])),
+                      (np.array([[0], [1], [0], [0]]), np.array([[0], [1], [0], [0]])),
+                      (np.array([[0], [0], [1], [0]]), np.array([[0], [0], [1], [0]])),
+                      (np.array([[0], [0], [0], [1]]), np.array([[0], [0], [0], [1]]))]
+
+        test_data = [(np.array([[1], [0], [0], [0]]), np.array([[1], [0], [0], [0]])),
+                     (np.array([[0], [1], [0], [0]]), np.array([[0], [1], [0], [0]])),
+                     (np.array([[0], [0], [1], [0]]), np.array([[0], [0], [1], [0]])),
+                     (np.array([[0], [0], [0], [1]]), np.array([[0], [0], [0], [1]]))]
         input_size = 4
         output_size = 4
 
@@ -47,23 +54,12 @@ if __name__ == "__main__":
             break
 
     if mode == 1:
-        while True:
-            print("1 - Load from file\n2 - Create new network")
-            variable = get_input("Choose: ",int)
-            if variable not in [1, 2]:
-                print("Niepoprawny wybor, sprobuj jeszcze raz.")
-            else:
-                break
-
-        if variable == 1:
-            net = NeuralNet.load("data/network.pkl")
-        else:
-            hidden_layers = [get_input(f"Neurons in hidden layer {i+1}: ") for i in range(
-                get_input("Number of hidden layers: "))]
+        hidden_layers = [get_input(f"Neurons in hidden layer {i+1}: ") for i in range(
+            get_input("Number of hidden layers: "))]
 
 
-            use_bias = get_input("Use bias? (1-yes / 0-no): ", int) == 1
-            net = NeuralNet([input_size] + hidden_layers + [output_size], use_bias)
+        use_bias = get_input("Use bias? (1-yes / 0-no): ", int) == 1
+        net = NeuralNet([input_size] + hidden_layers + [output_size], use_bias)
 
         stop_type = get_input("Stop condition: 1 - Epochs, 2 - Error threshold: ", int)
         epochs, stop_error = (get_input("Epochs: "), -1.0) if stop_type == 1 else (10000, get_input("Error threshold: ", float))
@@ -78,10 +74,26 @@ if __name__ == "__main__":
         shuffle = get_input("Shuffle data? (1-yes / 0-no): ", int) == 1
 
         net.train(train_data, epochs, stop_error, lr, momentum, shuffle, log_step)
-        net.save("data/network.pkl")
+
+        save_network = get_input("Save network? (1-yes / 0-no): ")
+        if save_network == 1:
+            if dataset_choice == 1:
+                net.save("data/network.pkl")
+            else:
+                net.save("data/network2.pkl")
+        else:
+            net.save("data/network_moment.pkl")
+
 
     else:
-        net = NeuralNet.load("data/network.pkl")
+        load = get_input("Load from file? (1-yes / 0-no): ", int)
+        if load == 1:
+            if dataset_choice == 1:
+                net = NeuralNet.load("data/network.pkl")
+            else:
+                net = NeuralNet.load("data/network2.pkl")
+        else:
+            net = NeuralNet.load("data/network_moment.pkl")
         correct = 0
 
         y_true = []
