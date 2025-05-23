@@ -80,9 +80,6 @@ class NeuralNet:
                 print("Target error achieved. Training stopped.")
                 break
 
-    def predict(self, x):
-        return self.forward(x)[-1]
-
     def saveToFile(self, path):
         data = {
             'weights': [w.tolist() for w in self.weights],
@@ -102,7 +99,7 @@ class NeuralNet:
         print("\n=== TEST RESULTS ===")
         total_loss = 0
         for i, (x, y) in enumerate(data):
-            output = self.predict(x)
+            output = self.forward(x)[-1]
             error = np.sum((np.array(y).reshape(-1, 1) - output) ** 2)
             total_loss += error
             print(f"Sample {i + 1}:")
