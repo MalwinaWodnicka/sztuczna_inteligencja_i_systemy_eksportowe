@@ -1,28 +1,28 @@
 import pandas as pd
-from MLP_module import NeuralNet
-from helper import prepare_dataset, plot_training_error
 import numpy as np
 from sklearn.metrics import classification_report, confusion_matrix
+from help import prepare_dataset
+from MLP import NeuralNet as network
+
 
 def get_input(prompt, cast_type=int, cond=lambda x: True):
     while True:
         try:
             val = cast_type(input(prompt))
             if cond(val): return val
-        except: pass
+        except:
+            pass
 
 
 if __name__ == "__main__":
 
-
     while True:
-        print("1 - Iris Dataset\n2 - Autoencoder Example")
+        print("1 - Iris Dataset\n2 - Autoencoder Example\n3 - Quit")
         dataset_choice = get_input("Select dataset: ", int)
-        if dataset_choice not in [1, 2]:
-            print("Niepoprawny wybor, sprobuj jeszcze raz.")
+        if dataset_choice not in [1, 2, 3]:
+            print("Invalid choice")
         else:
             break
-
 
     if dataset_choice == 1:
         df = pd.read_csv("data/data.csv", header=None)
@@ -31,6 +31,7 @@ if __name__ == "__main__":
         test_data = prepare_dataset(df.head(30).values, 3)
         input_size = 4
         output_size = 3
+        print(train_data)
     else:
         train_data = [(np.array([[1], [0], [0], [0]]), np.array([[1], [0], [0], [0]])),
                       (np.array([[0], [1], [0], [0]]), np.array([[0], [1], [0], [0]])),
@@ -44,83 +45,77 @@ if __name__ == "__main__":
         input_size = 4
         output_size = 4
 
-
+    isNetwork = False
     while True:
-        print("1 - Train Mode\n2 - Test Mode")
-        mode = get_input("Choose mode: ", int)
-        if mode not in [1, 2]:
-            print("Niepoprawny wybor, sprobuj jeszcze raz.")
+        if isNetwork:
+            print("1. Train mode")
+            print("2. Test mode")
+            print("3. Save network")
+            print("4. Quit")
+            option = get_input("Choose an option: ")
         else:
-            break
+            print("What do you want to do?")
+            print("1. Create new network")
+            print("2. Load network")
+            print("4. Quit")
+            option = get_input("Choose an option: ")
+        if option == 1 and isNetwork:
+            stop_type = get_input("Stop condition: 1 - Epochs, 2 - Error threshold: ", int)
+            epochs, stop_error = (get_input("Epochs: "), -1.0) if stop_type == 1 else (10000,
+                    get_input("Error threshold: ", float))
+            log_step = get_input("Log step: ", int)
+            # trening
+        if option == 2 and isNetwork:
+            correct = [0] * output_size
+            predicted_labels = []
+            true_labels = []
 
-    if mode == 1:
-        hidden_layers = [get_input(f"Neurons in hidden layer {i+1}: ") for i in range(
-            get_input("Number of hidden layers: "))]
+            with open("trainStats.txt", "w") as file:
+                for index in range(len(test_data)):
+                    inputs, expected = test_data[index]
+                    inputs = inputs.reshape(-1)
+                    expected = expected.reshape(-1)
+
+                    output = network.forward(inputs)
+                    output = np.array(output).reshape(-1)
+
+                    true_label = np.argmax(expected)
+                    predicted_label = np.argmax(output)
+
+                    true_labels.append(true_label)
+                    predicted_labels.append(predicted_label)
+
+                    if predicted_label == true_label:
+                        correct[true_label] += 1
+
+                    error = network.calculateError(expected, output)
+
+                    neuronWeights = []
+                    neuronOutputs = []
+                    for layer in network.layers:
+                        layerWeights = [neuron.weights for neuron in layer.neurons]
+                        layerOutputs = [neuron.output for neuron in layer.neurons]
+                        neuronWeights.append(layerWeights)
+                        neuronOutputs.append(layerOutputs)
+
+                    file.write(f"Wzorzec numer: {index}, {inputs}\n")
+                    file.write(f"Popelniony blad dla wzorca: {error}\n")
+                    file.write(f"Pozadany wzorzec odpowiedzi: {expected}\n")
+                    for i in range(len(output)):
+                        file.write(f"Blad popelniony na {i} wyjsciu: {output[i] - expected[i]}\n")
+                        file.write(f"Wartosc na {i} wyjsciu: {output[i]}\n")
+                    file.write(f"Wartosci wag neuronow wyjsciowych\n {neuronWeights[-1]}\n")
+                    for i in reversed(range(len(network.layers) - 1)):
+                        file.write(f"Wartosci wyjsciowe neuronow ukrytych warstwy {i}: {neuronOutputs[i]}\n")
+                        file.write(f"Wartosci wag neuronow ukrytych warstwy {i}:\n {neuronWeights[i]}\n")
+                    file.write("\n\n")
+
+            print("Confusion Matrix:")
+            print(confusion_matrix(true_labels, predicted_labels))
+            print("\nClassification Report:")
+            print(classification_report(true_labels, predicted_labels))
 
 
-        use_bias = get_input("Use bias? (1-yes / 0-no): ", int) == 1
-        net = NeuralNet([input_size] + hidden_layers + [output_size], use_bias)
-
-        stop_type = get_input("Stop condition: 1 - Epochs, 2 - Error threshold: ", int)
-        epochs, stop_error = (get_input("Epochs: "), -1.0) if stop_type == 1 else (10000, get_input("Error threshold: ", float))
-
-        lr = get_input("Learning rate (0-1): ", float, lambda x: 0 <= x <= 1)
-        dec = get_input("Do you want momentum? 1-yes/0-no: ")
-        if dec == 1:
-            momentum = get_input("Momentum (0-1): ", float, lambda x: 0 <= x <= 1)
-        else:
-            momentum = 0.0
-        log_step = get_input("Log step: ", int)
-        shuffle = get_input("Shuffle data? (1-yes / 0-no): ", int) == 1
-
-        net.train(train_data, epochs, stop_error, lr, momentum, shuffle, log_step)
-
-        save_network = get_input("Save network? (1-yes / 0-no): ")
-        if save_network == 1:
-            if dataset_choice == 1:
-                net.save("data/network.pkl")
-            else:
-                net.save("data/network2.pkl")
-        else:
-            net.save("data/network_moment.pkl")
 
 
-    else:
-        load = get_input("Load from file? (1-yes / 0-no): ", int)
-        if load == 1:
-            if dataset_choice == 1:
-                net = NeuralNet.load("data/network.pkl")
-            else:
-                net = NeuralNet.load("data/network2.pkl")
-        else:
-            net = NeuralNet.load("data/network_moment.pkl")
-        correct = 0
 
-        y_true = []
-        y_pred = []
-        for x, y in test_data:
-            pred = np.argmax(net.forward(x))
-            hidden_outputs = net.get_hidden_output(x)
-            print(f"Wejście: {x.ravel()} -> Ukryte: {hidden_outputs.ravel()}")
-            actual = np.argmax(y)
-            y_true.append(actual)
-            y_pred.append(pred)
-            if pred == actual:
-                correct += 1
-            print(f"Expected: {actual}, Predicted: {pred}")
-        print(f"Accuracy: {correct / len(test_data):.2%}")
-        plot_training_error("data/train_logs.csv")
-
-        print("\nConfusion Matrix:")
-        cm = confusion_matrix(y_true, y_pred)
-        print(cm)
-
-        print("\nClassification Report:")
-        print(classification_report(y_true, y_pred, digits=4))
-
-        print("\nCorrect classifications per class:")
-        for i in range(len(cm)):
-            print(f"Class {i}: {cm[i][i]} correctly classified")
-
-        total_correct = sum(cm[i][i] for i in range(len(cm)))
-        print(f"\nTotal correct classifications: {total_correct}/{len(y_true)}")
