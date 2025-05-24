@@ -13,3 +13,16 @@ def prepare_dataset(raw_data, num_classes):
         label = one_hot_encode(int(row[-1]), num_classes)
         dataset.append((features, label))
     return dataset
+
+def plot_training_error(file_path):
+    with open(file_path, "r") as f:
+        lines = f.readlines()
+    epochs, errors = zip(*(map(float, line.strip().split(",")) for line in lines))
+    plt.plot(epochs, errors, label="Training Error", color="purple")
+    plt.xlabel("Epoch")
+    plt.ylabel("Error")
+    plt.title("Training Progress")
+    plt.grid(True)
+    plt.legend()
+    plt.ylim(bottom=0)
+    plt.show()
