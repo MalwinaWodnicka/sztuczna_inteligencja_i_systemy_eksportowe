@@ -80,10 +80,10 @@ if __name__ == "__main__":
             hidden_layers = [get_input(f"Neurons in hidden layer {i + 1}: ") for i in range(
                 get_input("Number of hidden layers: "))]
             network_architecture = [input_size] + hidden_layers + [output_size]
-
+            print(network_architecture)
             use_bias = get_input("Use bias? (1 - Yes, 0 - No) [1]: ", int, lambda x: x in [0, 1], default=1)
 
-            current_network = network([input_size] + hidden_layers + [output_size], use_bias)
+            current_network = network(network_architecture, use_bias)
 
             stop_type = get_input("Stop condition (1 - Epochs, 2 - Error threshold) [1]: ",
                                   int, lambda x: x in [1, 2], default=1)
@@ -95,12 +95,12 @@ if __name__ == "__main__":
             else:
                 stop_error = get_input("Enter error threshold [0.01]: ",
                                        float, lambda x: x > 0, default=0.01)
-                epochs = 10000  # Large number as upper bound
+                epochs = 10000
 
-            lr = get_input("Enter learning rate (0.01-1.0) [0.1]: ",
-                           float, lambda x: 0 < x <= 1, default=0.1)
-            momentum = get_input("Enter momentum (0.0-0.9) [0.9]: ",
-                                 float, lambda x: 0 <= x < 1, default=0.9)
+            lr = get_input("Enter learning rate (0.01-1.0) [0.6]: ",
+                           float, lambda x: 0 < x <= 1, default=0.6)
+            momentum = get_input("Enter momentum (0.0-0.9) [0.6]: ",
+                                 float, lambda x: 0 <= x < 1, default=0.6)
             log_step = get_input("Enter log interval (epochs) [10]: ",
                                  int, lambda x: x > 0, default=10)
             shuffle = get_input("Shuffle data each epoch? (1 - Yes, 0 - No) [1]: ",
@@ -131,25 +131,64 @@ if __name__ == "__main__":
                 print(f"Error loading network: {str(e)}")
 
         elif option == 1 and isNetwork:  # Train mode
+            hidden_layers = [get_input(f"Neurons in hidden layer {i + 1}: ") for i in range(
+                get_input("Number of hidden layers: "))]
+            network_architecture = [input_size] + hidden_layers + [output_size]
+            print(network_architecture)
 
-            print()
 
+            current_network = network(layers=network_architecture)
+
+            lr = get_input("Enter learning rate (0.01-1.0) [0.1]: ",
+                           float, lambda x: 0 < x <= 1, default=0.1)
+            momentum = get_input("Enter momentum (0.0-0.9) [0.9]: ",
+                                 float, lambda x: 0 <= x < 1, default=0.9)
+
+
+            current_network.train(train_data,
+                                  log_path="training_log.csv",
+                                  lr=lr,
+                                  momentum=momentum)
         elif option == 2 and isNetwork:  # Test mode
             print("\nTesting network...")
-            # current_network.test(test_data)
 
             if dataset_choice == 1:
+                correct = 0
                 y_true = []
                 y_pred = []
                 for x, y in test_data:
-                    output = current_network.forward(x)[-1]
-                    y_true.append(np.argmax(y))
-                    y_pred.append(np.argmax(output))
+                    out = current_network.forward(x)[-1]
+                    print(f"x: {x.ravel()}, Wyjście: {out}")
+                    pred = np.argmax(out)
+                    hidden_outputs = current_network.get_hidden_output(x)
+                    # print(f"Wejście: {x.ravel()} -> Ukryte: {hidden_outputs.ravel()}")
+                    actual = np.argmax(y)
+                    y_true.append(actual)
+                    y_pred.append(pred)
+                    if pred == actual:
+                        correct += 1
+                    print(f"Expected: {actual}, Predicted: {pred}")
+
+                print(f"Accuracy: {correct / len(test_data):.2%}")
 
                 print("\nClassification Report:")
                 print(classification_report(y_true, y_pred))
+                print("\n")
                 print("\nConfusion Matrix:")
-                print(confusion_matrix(y_true, y_pred))
+                cm = confusion_matrix(y_true, y_pred)
+                print(cm, "\n\n")
+
+                print("\nCorrect classifications per class:")
+                for i in range(len(cm)):
+                    print(f"Class {i}: {cm[i][i]} correctly classified")
+
+            else:
+                correct = 0
+                for x, y in test_data:
+                    print(f"x: {x.ravel()}, output: {current_network.forward(x)[-1]}")
+                    # if pred == actual:
+                    #     correct += 1
+                print(f"Accuracy: {correct / len(test_data):.2%}")
 
             current_network.plot_training_error("training_log.csv")
 

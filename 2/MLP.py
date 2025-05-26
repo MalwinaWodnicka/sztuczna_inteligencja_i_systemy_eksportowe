@@ -18,6 +18,7 @@ class NeuralNet:
         self.biases = [np.random.uniform(-1, 1, (y, 1)) if use_bias else np.zeros((y, 1))
                        for y in layers[1:]]
         self.weights = [np.random.uniform(-1, 1, (y, x)) for x, y in zip(layers[:-1], layers[1:])]
+        # połączenie z warstwy wejściowej do ukrytej i z ukrytej do wyjściowej (macierze, wylosowana wartość od -1 do 1)
         self.velocity = [np.zeros_like(w) for w in self.weights]
 
     def forward(self, inputs):
@@ -39,11 +40,13 @@ class NeuralNet:
         errors = [None] * len(self.weights) # pusta tablica o długości ilości wag
         # (wyjście sieci - to co powinno wyjść) * pochodna funkcji aktywacji (mówi nam jak bardzo możemy zmieniać wyjście)
         delta = (activations[-1] - targets) * sigmoid_derivative(activations[-1])
+        delta = np.clip(delta, -1, 1)
         errors[-1] = delta
 
         for l in range(len(errors) - 2, -1, -1):
             # iloczyn skalarny transponowanej tablicy wag i błędu z następnej warstwy pomnożony przez pochodną fun aktywacji
             delta = np.dot(self.weights[l + 1].T, errors[l + 1]) * sigmoid_derivative(activations[l + 1])
+            delta = np.clip(delta, -1, 1) # ogranicza aby wartości delty były z zakresu -1 do 1
             errors[l] = delta
 
         for i in range(len(self.weights)):
@@ -62,7 +65,7 @@ class NeuralNet:
                 self.biases[i] -= lr * errors[i]
             # jak bardzo i w którą strone zmienić bias
 
-    def train(self, data, lr=0.1, momentum=0.9, max_epochs=1000, min_error=None, shuffle=False,
+    def train(self, data, lr=0.1, momentum=0.9, max_epochs=10000, min_error=0.0001, shuffle=False,
               log_path=None, log_interval=10):
         if log_path:
             with open(log_path, 'w') as log:
@@ -74,6 +77,7 @@ class NeuralNet:
 
             total_loss = 0
             for x, y in data:
+
                 activations = self.forward(x)
                 preds = activations[-1]
                 loss = np.sum((np.array(y).reshape(-1, 1) - preds) ** 2)
@@ -120,37 +124,11 @@ class NeuralNet:
         plt.ylim(bottom=0)
         plt.show()
 
-    # def test(self, data):
-    #     print("\n=== TEST RESULTS ===")
-    #     total_loss = 0
-    #     errors_per_sample = []
-    #
-    #     for i, (x, y) in enumerate(data):
-    #         output = self.forward(x)[-1]
-    #         error = np.sum((np.array(y).reshape(-1, 1) - output) ** 2)
-    #         total_loss += error
-    #         errors_per_sample.append(error)
-    #
-    #         x_flat = x.ravel()
-    #         y_flat = np.array(y).ravel()
-    #         output_flat = output.ravel()
-    #
-    #         print(f"Sample {i + 1}:")
-    #         print(f"  Input:      {[f'{float(val)}' for val in x_flat]}")
-    #         print(f"  Expected:   {[f'{float(val)}' for val in y_flat]}")
-    #         print(f"  Predicted:  {[f'{float(val)}' for val in output_flat]}")
-    #         print(f"  Error: {error}\n")
-    #
-    #     avg_error = total_loss / len(data)
-    #     print(f"Average error (MSE): {avg_error}")
-    #
-    #     # 📈 Wykres błędu
-    #     plt.figure(figsize=(10, 5))
-    #     plt.plot(errors_per_sample, marker='o', label='Błąd (MSE)')
-    #     plt.xlabel("Próbka testowa")
-    #     plt.ylabel("Błąd MSE")
-    #     plt.title("Błąd dla każdej próbki testowej")
-    #     plt.grid(True)
-    #     plt.legend()
-    #     plt.tight_layout()
-    #     plt.show()
+    def get_hidden_output(self, x):
+        a = x
+        for i in range(len(self.weights) - 1):
+            z = np.dot(self.weights[i], a)
+            if self.use_bias:
+                z += self.biases[i]
+            a = sigmoid(z)
+        return a
