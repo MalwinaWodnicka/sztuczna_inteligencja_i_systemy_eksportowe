@@ -144,10 +144,24 @@ if __name__ == "__main__":
             momentum = get_input("Enter momentum (0.0-0.9) [0.9]: ",
                                  float, lambda x: 0 <= x < 1, default=0.9)
 
+            stop_type = get_input("Stop condition (1 - Epochs, 2 - Error threshold) [1]: ",
+                                  int, lambda x: x in [1, 2], default=1)
+
+            if stop_type == 1:
+                epochs = get_input("Enter number of epochs [1000]: ",
+                                   int, lambda x: x > 0, default=1000)
+                stop_error = None
+            else:
+                stop_error = get_input("Enter error threshold [0.01]: ",
+                                       float, lambda x: x > 0, default=0.01)
+                epochs = 10000
+
 
             current_network.train(train_data,
                                   log_path="training_log.csv",
                                   lr=lr,
+                                  max_epochs=epochs,
+                                  min_error=stop_error,
                                   momentum=momentum)
         elif option == 2 and isNetwork:  # Test mode
             print("\nTesting network...")
@@ -185,9 +199,12 @@ if __name__ == "__main__":
             else:
                 correct = 0
                 for x, y in test_data:
-                    print(f"x: {x.ravel()}, output: {current_network.forward(x)[-1]}")
-                    # if pred == actual:
-                    #     correct += 1
+                    out = current_network.forward(x)[-1]
+                    pred = np.argmax(out)
+                    actual = np.argmax(y)
+                    print(f"x: {x.ravel()}, output: {np.array(out).ravel()}")
+                    if pred == actual:
+                        correct += 1
                 print(f"Accuracy: {correct / len(test_data):.2%}")
 
             current_network.plot_training_error("training_log.csv")
