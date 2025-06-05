@@ -120,6 +120,8 @@ if __name__ == "__main__":
             print("Training completed!")
 
         elif option == 2 and not isNetwork:  # Load network
+            hidden_layers = [get_input(f"Neurons in hidden layer {i + 1}: ") for i in range(
+                get_input("Number of hidden layers: "))]
             default_path = "network.json"
             path = input(f"Enter path to network file [{default_path}]: ") or default_path
             try:
