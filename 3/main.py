@@ -41,7 +41,6 @@ grid.fit(X_train_scaled, y_train)
 
 print("Najlepsze parametry:", grid.best_params_)
 print("Najlepszy wynik walidacji:", grid.best_score_)
-print("Najlepszy model:", grid.best_estimator_)
 
 # 6. Użycie najlepszego modelu do predykcji
 best_model = grid.best_estimator_
@@ -64,22 +63,22 @@ plt.tight_layout()
 plt.show()
 
 # 9. Wykres błędu w zależności od C
-C_values = np.logspace(-3, 2, 10)
-errors = []
-
-for C in C_values:
-    model = SVC(kernel='rbf', C=C, gamma=grid.best_params_['gamma'])
-    model.fit(X_train_scaled, y_train)
-    y_pred_temp = model.predict(X_test_scaled)
-    error = 1 - accuracy_score(y_test, y_pred_temp)
-    errors.append(error)
-
-plt.figure()
-plt.semilogx(C_values, errors, marker='o', color='purple')
-plt.title('Wykres błędu w zależności od C')
-plt.xlabel('Wartość C (log scale)')
-plt.ylabel('Błąd klasyfikacji')
-plt.grid(True)
-plt.tight_layout()
-plt.ylim(bottom=0)
-plt.show()
+# C_values = np.logspace(-3, 2, 10)
+# errors = []
+#
+# for C in C_values:
+#     model = SVC(kernel='rbf', C=C, gamma=grid.best_params_['gamma'])
+#     model.fit(X_train_scaled, y_train)
+#     y_pred_temp = model.predict(X_test_scaled)
+#     error = 1 - accuracy_score(y_test, y_pred_temp)
+#     errors.append(error)
+#
+# plt.figure()
+# plt.semilogx(C_values, errors, marker='o', color='purple')
+# plt.title('Wykres błędu w zależności od C')
+# plt.xlabel('Wartość C (log scale)')
+# plt.ylabel('Błąd klasyfikacji')
+# plt.grid(True)
+# plt.tight_layout()
+# plt.ylim(bottom=0)
+# plt.show()
