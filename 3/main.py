@@ -23,8 +23,8 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 # 4. Normalizacja cech
 scaler = StandardScaler()
-X_train_scaled = scaler.fit_transform(X_train)
-X_test_scaled = scaler.transform(X_test)
+X_train_scaled = scaler.fit_transform(X_train) # liczy średnią i odchylenie standardowe
+X_test_scaled = scaler.transform(X_test) # odejmuje od każdej wartości średnią i wynik dzieli na odchylenie standardowe
 
 # 5. Optymalizacja parametrów za pomocą GridSearchCV
 param_grid = {
@@ -33,11 +33,15 @@ param_grid = {
     'kernel': ['rbf']
 }
 
-grid = GridSearchCV(SVC(), param_grid, cv=5, scoring='accuracy')
+# super vector classifier
+grid = GridSearchCV(SVC(), param_grid, cv=5, scoring='accuracy') # testuje wszystkie kombinacje parametrów
+# cv -> walidacja krzyżowa. Dzieli dane treningowe na 5 i na 4 z nich trenuje 5 jest dla testów
+# scoring -> accuracy oznacza że prównuje modele na podstawie ich dokładności – czyli procentu poprawnych przewidywań
 grid.fit(X_train_scaled, y_train)
 
 print("Najlepsze parametry:", grid.best_params_)
 print("Najlepszy wynik walidacji:", grid.best_score_)
+print("Najlepszy model:", grid.best_estimator_)
 
 # 6. Użycie najlepszego modelu do predykcji
 best_model = grid.best_estimator_
