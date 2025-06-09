@@ -1,3 +1,4 @@
+from pathlib import Path
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -8,7 +9,8 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-file_path = r'C:data\bupa.data'
+
+file_path = Path(__file__).parent / 'data' / 'bupa.data'
 columns = ['Mcv', 'Alkphos', 'Sgpt', 'Sgot', 'Gammagt', 'Drinks', 'Selector']
 data = pd.read_csv(file_path, header=None, names=columns)
 
@@ -27,7 +29,7 @@ model.fit(X_train_scaled, y_train)
 
 y_pred = model.predict(X_test_scaled)
 
-print("\n📊 Wyniki dla: SVM (RBF Kernel)")
+print("\nWyniki dla: SVM (RBF Kernel)")
 print(classification_report(y_test, y_pred, digits=3))
 
 cm = confusion_matrix(y_test, y_pred)
@@ -39,5 +41,5 @@ plt.tight_layout()
 plt.show()
 
 accuracy = accuracy_score(y_test, y_pred)
-print(f"🎯 Dokładność (accuracy): {accuracy * 100:.2f}%")
+print(f"Dokładność (accuracy): {accuracy * 100:.2f}%")
 
